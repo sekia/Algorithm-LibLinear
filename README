@@ -1,0 +1,27 @@
+This is Perl module Algorithm::LinearSVM.
+
+INSTALLATION
+
+Algorithm::LinearSVM installation is straightforward. If your CPAN shell is set up,
+you should just be able to do
+
+    % cpan Algorithm::LinearSVM
+
+Download it, unpack it, then build it as per the usual:
+
+    % perl Makefile.PL
+    % make && make test
+
+Then install it:
+
+    % make install
+
+DOCUMENTATION
+
+Algorithm::LinearSVM documentation is available as in POD. So you can do:
+
+    % perldoc Algorithm::LinearSVM
+
+to read the documentation online with your favorite pager.
+
+Koichi SATOH
