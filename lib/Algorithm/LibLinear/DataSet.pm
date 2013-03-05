@@ -43,6 +43,20 @@ sub add_data {
 
 sub as_arrayref { $_[0]->{data_set} }
 
+sub as_input_format {
+    args
+        my $self;
+
+    my $result = '';
+    for my $entry (@{ $self->as_arrayref }) {
+        my $feature = $entry->{feature};
+        my @feature_dump =
+            map { "$_:$feature->{$_}" } sort { $a <=> $b } keys %$feature;
+        $result .= join(' ', $entry->{label}, @feature_dump) . "\n";
+    }
+    return $result;
+}
+
 sub as_problem {
     args
         my $self,
