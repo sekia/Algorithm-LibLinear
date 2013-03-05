@@ -3,12 +3,6 @@ package Algorithm::LibLinear::Types;
 use 5.014;
 use Mouse::Util::TypeConstraints;
 
-enum 'Algorithm::LibLinear::SolverDescriptor' => [
-    qw/L2R_LR L2R_L2LOSS_SVC_DUAL L2R_L2LOSS_SVC L2R_L1LOSS_SVC_DUAL MCSVM_CS
-       L1R_L2LOSS_SVC L1R_LR L2R_LR_DUAL L2R_L2LOSS_SVR L2R_L2LOSS_SVR_DUAL
-       L2R_L1LOSS_SVR_DUAL/
-];
-
 subtype 'Algorithm::LibLinear::LabeledData'
     => as 'HashRef'
     => where {
@@ -35,6 +29,12 @@ subtype 'Algorithm::LibLinear::Parameter::ClassWeight'
         state $weight_type = find_type_constraint 'Num';
         $label_type->check($_->{label}) and $weight_type->check($_->{weight});
     };
+
+enum 'Algorithm::LibLinear::SolverDescriptor' => [
+    qw/L2R_LR L2R_L2LOSS_SVC_DUAL L2R_L2LOSS_SVC L2R_L1LOSS_SVC_DUAL MCSVM_CS
+       L1R_L2LOSS_SVC L1R_LR L2R_LR_DUAL L2R_L2LOSS_SVR L2R_L2LOSS_SVR_DUAL
+       L2R_L1LOSS_SVR_DUAL/
+];
 
 no Mouse::Util::TypeConstraints;
 
