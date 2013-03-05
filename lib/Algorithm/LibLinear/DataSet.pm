@@ -1,8 +1,8 @@
-package Algorithm::LinearSVM::DataSet;
+package Algorithm::LibLinear::DataSet;
 
 use 5.014;
-use Algorithm::LinearSVM;  # For Algortihm::LinearSVM::Problem
-use Algorithm::LinearSVM::Types;
+use Algorithm::LibLinear;  # For Algortihm::LibLinear::Problem
+use Algorithm::LibLinear::Types;
 use Carp;
 use List::MoreUtils qw/any/;
 use Smart::Args;
@@ -10,7 +10,7 @@ use Smart::Args;
 sub new {
     args_pos
         my $class => 'ClassName',
-        my $data_set => 'ArrayRef[Algorithm::LinearSVM::LabeledData]';
+        my $data_set => 'ArrayRef[Algorithm::LibLinear::LabeledData]';
 
     bless +{ data_set => $data_set } => $class;
 }
@@ -36,7 +36,7 @@ sub load {
 sub add_data {
     args
         my $self,
-        my $data => 'Algorithm::LinearSVM::LabeledData';
+        my $data => 'Algorithm::LibLinear::LabeledData';
 
     push @{ $self->data_set }, $data;
 }
@@ -53,7 +53,7 @@ sub as_problem {
         push @features, $data->{feature};
         push @labels, $data->{label};
     }
-    Algorithm::LinearSVM::Problem->new(
+    Algorithm::LibLinear::Problem->new(
         \@labels, \@features, defined $bias ? ($bias) : (),
     );
 }

@@ -1,7 +1,7 @@
 use inc::Module::Install;
 
-name 'Algorithm-LinearSVM';
-all_from 'lib/Algorithm/LinearSVM.pm';
+name 'Algorithm-LibLinear';
+all_from 'lib/Algorithm/LibLinear.pm';
 
 checklibs lib => 'blas';
 

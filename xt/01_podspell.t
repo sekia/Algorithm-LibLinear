@@ -7,4 +7,4 @@ all_pod_files_spelling_ok('lib');
 __DATA__
 Koichi SATOH
 sato@seesaa.co.jp
-Algorithm::LinearSVM
+Algorithm::LibLinear

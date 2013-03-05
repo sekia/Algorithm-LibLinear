@@ -8,7 +8,7 @@ struct problem * T_LIBLINEAR_PROBLEM
 INPUT
 T_LIBLINEAR_MODEL
 	if (SvROK($arg) &&
-          sv_derived_from($arg, \"Algorithm::LinearSVM::Model::Raw\")) {
+          sv_derived_from($arg, \"Algorithm::LibLinear::Model::Raw\")) {
 	    IV tmp = SvIV((SV*)SvRV($arg));
 	    $var = INT2PTR($type,tmp);
 	}
@@ -20,7 +20,7 @@ T_LIBLINEAR_MODEL
 
 T_LIBLINEAR_PARAMETER
 	if (SvROK($arg) &&
-          sv_derived_from($arg, \"Algorithm::LinearSVM::Parameter\")) {
+          sv_derived_from($arg, \"Algorithm::LibLinear::Parameter\")) {
 	    IV tmp = SvIV((SV*)SvRV($arg));
 	    $var = INT2PTR($type,tmp);
 	}
@@ -32,7 +32,7 @@ T_LIBLINEAR_PARAMETER
 
 T_LIBLINEAR_PROBLEM
 	if (SvROK($arg) &&
-          sv_derived_from($arg, \"Algorithm::LinearSVM::Problem\")) {
+          sv_derived_from($arg, \"Algorithm::LibLinear::Problem\")) {
 	    IV tmp = SvIV((SV*)SvRV($arg));
 	    $var = INT2PTR($type,tmp);
 	}
@@ -43,10 +43,10 @@ T_LIBLINEAR_PROBLEM
     }
 OUTPUT
 T_LIBLINEAR_MODEL
-	sv_setref_pv($arg, \"Algorithm::LinearSVM::Model::Raw\", (void*)$var);
+	sv_setref_pv($arg, \"Algorithm::LibLinear::Model::Raw\", (void*)$var);
 
 T_LIBLINEAR_PARAMETER
-	sv_setref_pv($arg, \"Algorithm::LinearSVM::Parameter\", (void*)$var);
+	sv_setref_pv($arg, \"Algorithm::LibLinear::Parameter\", (void*)$var);
 
 T_LIBLINEAR_PROBLEM
-	sv_setref_pv($arg, \"Algorithm::LinearSVM::Problem\", (void*)$var);
+	sv_setref_pv($arg, \"Algorithm::LibLinear::Problem\", (void*)$var);

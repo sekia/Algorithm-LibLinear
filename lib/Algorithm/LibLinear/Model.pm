@@ -1,13 +1,13 @@
-package Algorithm::LinearSVM::Model;
+package Algorithm::LibLinear::Model;
 
 use 5.014;
-use Algorithm::LinearSVM;  # For Algorithm::LinearSVM::Model::Raw
+use Algorithm::LibLinear;  # For Algorithm::LibLinear::Model::Raw
 use Smart::Args;
 
 sub new {
     args
         my $class => 'ClassName',
-        my $raw_model => 'Algorithm::LinearSVM::Model::Raw';
+        my $raw_model => 'Algorithm::LibLinear::Model::Raw';
 
     bless +{ raw_model => $raw_model, } => $class;
 }
@@ -17,7 +17,7 @@ sub load {
         my $class => 'ClassName',
         my $filename => 'Str';
 
-    my $raw_model = Algorithm::LinearSVM::Model::Raw->load($filename);
+    my $raw_model = Algorithm::LibLinear::Model::Raw->load($filename);
     $class->new(raw_model => $raw_model);
 }
 

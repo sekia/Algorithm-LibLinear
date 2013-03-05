@@ -1,9 +1,9 @@
-package Algorithm::LinearSVM;
+package Algorithm::LibLinear;
 
 use 5.014;
-use Algorithm::LinearSVM::DataSet;
-use Algorithm::LinearSVM::Model;
-use Algorithm::LinearSVM::Types;
+use Algorithm::LibLinear::DataSet;
+use Algorithm::LibLinear::Model;
+use Algorithm::LibLinear::Types;
 use Smart::Args;
 use XSLoader;
 
@@ -51,11 +51,11 @@ sub new {
         my $epsilon => +{ isa => 'Num', optional => 1, },
         my $loss_sensitivity => +{ isa => 'Num', default => 0.1, },
         my $solver => +{
-            isa => 'Algorithm::LinearSVM::SolverDescriptor',
+            isa => 'Algorithm::LibLinear::SolverDescriptor',
             default => 'L2R_L2LOSS_SVC_DUAL',
         },
         my $weights => +{
-            isa => 'ArrayRef[Algorithm::LinearSVM::Parameter::ClassWeight]',
+            isa => 'ArrayRef[Algorithm::LibLinear::Parameter::ClassWeight]',
             default => [],
         };
 
@@ -66,7 +66,7 @@ sub new {
         push @weight_labels, $weight->{label};
         push @weights, $weight->{weight};
     }
-    my $parameter = Algorithm::LinearSVM::Parameter->new(
+    my $parameter = Algorithm::LibLinear::Parameter->new(
         $solvers{$solver},
         $epsilon,
         $cost,
@@ -80,7 +80,7 @@ sub new {
 sub cross_validation {
     args
         my $self,
-        my $data_set => 'Algorithm::LinearSVM::DataSet',
+        my $data_set => 'Algorithm::LibLinear::DataSet',
         my $num_folds => 'Int';
 
     my $targets =
@@ -108,13 +108,13 @@ sub parameter { $_[0]->{parameter} }
 sub train {
     args
         my $self,
-        my $data_set => 'Algorithm::LinearSVM::DataSet';
+        my $data_set => 'Algorithm::LibLinear::DataSet';
 
-    my $raw_model = Algorithm::LinearSVM::Model::Raw->train(
+    my $raw_model = Algorithm::LibLinear::Model::Raw->train(
         $data_set->as_problem,
         $self->parameter,
     );
-    Algorithm::LinearSVM::Model->new(raw_model => $raw_model);
+    Algorithm::LibLinear::Model->new(raw_model => $raw_model);
 }
 
 1;
@@ -122,15 +122,15 @@ __END__
 
 =head1 NAME
 
-Algorithm::LinearSVM -
+Algorithm::LibLinear -
 
 =head1 SYNOPSIS
 
-  use Algorithm::LinearSVM;
+  use Algorithm::LibLinear;
 
 =head1 DESCRIPTION
 
-Algorithm::LinearSVM is
+Algorithm::LibLinear is
 
 =head1 AUTHOR
 

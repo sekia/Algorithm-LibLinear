@@ -65,7 +65,7 @@ HV2feature(pTHX_ HV *feature_hash) {
     curr->index = -1;  // Sentinel. LIBLINEAR doesn't care about its value.
 }
 
-MODULE = Algorithm::LinearSVM  PACKAGE = Algorithm::LinearSVM::Model::Raw  PREFIX = ll_
+MODULE = Algorithm::LibLinear  PACKAGE = Algorithm::LibLinear::Model::Raw  PREFIX = ll_
 
 PROTOTYPES: DISABLE
 
@@ -196,7 +196,7 @@ ll_DESTROY(self)
 CODE:
     free_and_destroy_model(&self);
 
-MODULE = Algorithm::LinearSVM  PACKAGE = Algorithm::LinearSVM::Parameter  PREFIX = ll_
+MODULE = Algorithm::LibLinear  PACKAGE = Algorithm::LibLinear::Parameter  PREFIX = ll_
 
 PROTOTYPES: DISABLE
 
@@ -266,7 +266,7 @@ CODE:
     free_parameter(self);
     
 
-MODULE = Algorithm::LinearSVM  PACKAGE = Algorithm::LinearSVM::Problem  PREFIX = ll_
+MODULE = Algorithm::LibLinear  PACKAGE = Algorithm::LibLinear::Problem  PREFIX = ll_
 
 PROTOTYPES: DISABLE
 
