@@ -63,6 +63,7 @@ HV2feature(pTHX_ HV *feature_hash) {
         ++curr;
     }
     curr->index = -1;  // Sentinel. LIBLINEAR doesn't care about its value.
+    return feature_vector;
 }
 
 MODULE = Algorithm::LibLinear  PACKAGE = Algorithm::LibLinear::Model::Raw  PREFIX = ll_

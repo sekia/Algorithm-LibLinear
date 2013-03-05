@@ -3,21 +3,24 @@ package Algorithm::LibLinear::Types;
 use 5.014;
 use Mouse::Util::TypeConstraints;
 
+subtype 'Algorithm::LibLinear::Feature'
+    => as 'HashRef[Num]'
+    => where {
+        for my $index (keys %$_) {
+            return unless $index == int $index and $index > 0;
+        }
+        return 1;
+    };
+
 subtype 'Algorithm::LibLinear::LabeledData'
     => as 'HashRef'
     => where {
         return if keys %$_ != 2;
         for my $key (qw/feature label/) { return unless exists $_->{$key} }
-        my $feature = $_->{feature};
-        for my $index (keys %$feature) {
-            return unless $index == int $index and $index > 0;
-        }
         state $label_type = find_type_constraint 'Int';
         state $feature_type =
-            Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint(
-                'HashRef[Num]'
-            );
-        $label_type->check($_->{label}) and $feature_type->check($feature);
+            find_type_constraint 'Algorithm::LibLinear::Feature';
+        $label_type->check($_->{label}) and $feature_type->check($_->{feature});
     };
 
 subtype 'Algorithm::LibLinear::Parameter::ClassWeight'
