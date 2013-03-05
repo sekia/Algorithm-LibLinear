@@ -3,12 +3,12 @@ package Algorithm::LibLinear::DataSet;
 use 5.014;
 use Algorithm::LibLinear;  # For Algortihm::LibLinear::Problem
 use Algorithm::LibLinear::Types;
-use Carp;
+use Carp qw//;
 use List::MoreUtils qw/any/;
 use Smart::Args;
 
 sub new {
-    args_pos
+    args
         my $class => 'ClassName',
         my $data_set => 'ArrayRef[Algorithm::LibLinear::LabeledData]';
 
@@ -30,7 +30,7 @@ sub load {
         open my $fh, '<', +($filename // \$string) or die $!;
         $fh;
     };
-    $class->new($class->parse_input_file($source));
+    $class->new(data_set => $class->parse_input_file($source));
 }
 
 sub add_data {
@@ -93,6 +93,38 @@ sub parse_input_file {
     return \@data_set;
 }
 
-sub size { @{ $_[0]->as_arrayref } + 0 }
+sub scale {
+    args
+        my $self,
+        my $parameter => 'Algorithm::LibLinear::ScalingParameter';
+
+    my ($lower_bound, $upper_bound) =
+        ($parameter->lower_bound, $parameter->upper_bound);
+    my $min_max_values = $parameter->min_max_values;
+    my @scaled_data_set = map {
+        my $feature = $_->{feature};
+        my $label = $_->{label};
+        my %scaled_feature;
+        for my $index (keys %$feature) {
+            my $unscaled = $feature->{$index};
+            my ($min, $max) = @{ $min_max_values->[$index - 1] };
+            next if $min == $max;
+            given ($unscaled) {
+                when ($min) { $scaled_feature{$index} = $lower_bound }
+                when ($max) { $scaled_feature{$index} = $upper_bound }
+                default {
+                    my $ratio = ($_ - $min) / ($max - $min);
+                    my $scaled =
+                        $lower_bound + ($upper_bound - $lower_bound) * $ratio;
+                    $scaled_feature{$index} = $scaled;
+                }
+            }
+        }
+        +{ feature => \%scaled_feature, label => $label, };
+    } @{ $self->as_arrayref };
+    return __PACKAGE__->new(data_set => \@scaled_data_set);
+}
+
+sub size { 0 + @{ $_[0]->as_arrayref } }
 
 1;
