@@ -23,7 +23,7 @@ subtype 'Algorithm::LibLinear::LabeledData'
         $label_type->check($_->{label}) and $feature_type->check($_->{feature});
     };
 
-subtype 'Algorithm::LibLinear::Parameter::ClassWeight'
+subtype 'Algorithm::LibLinear::TrainingParameter::ClassWeight'
     => as 'HashRef'
     => where {
         return if keys %$_ != 2;

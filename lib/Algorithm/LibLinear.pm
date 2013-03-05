@@ -55,7 +55,7 @@ sub new {
             default => 'L2R_L2LOSS_SVC_DUAL',
         },
         my $weights => +{
-            isa => 'ArrayRef[Algorithm::LibLinear::Parameter::ClassWeight]',
+            isa => 'ArrayRef[Algorithm::LibLinear::TrainingParameter::ClassWeight]',
             default => [],
         };
 
@@ -66,7 +66,7 @@ sub new {
         push @weight_labels, $weight->{label};
         push @weights, $weight->{weight};
     }
-    my $parameter = Algorithm::LibLinear::Parameter->new(
+    my $parameter = Algorithm::LibLinear::TrainingParameter->new(
         $solvers{$solver},
         $epsilon,
         $cost,

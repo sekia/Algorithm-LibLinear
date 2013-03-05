@@ -6,7 +6,9 @@
 #define NO_XSLOCKS
 #include "xshelper.h"
 
-static struct parameter *
+namespace {
+
+struct parameter *
 alloc_parameter(pTHX_ int num_weights) {
     struct parameter *parameter_;
     Newx(parameter_, 1, struct parameter);
@@ -16,7 +18,7 @@ alloc_parameter(pTHX_ int num_weights) {
     return parameter_;
 }
 
-static struct problem *
+struct problem *
 alloc_problem(pTHX_ int num_training_data) {
     struct problem *problem_;
     Newx(problem_, 1, struct problem);
@@ -27,14 +29,17 @@ alloc_problem(pTHX_ int num_training_data) {
     return problem_;
 }
 
-static void
+void
+dummy_puts(const char *) {}
+
+void
 free_parameter(pTHX_ struct parameter *parameter_) {
     Safefree(parameter_->weight_label);
     Safefree(parameter_->weight);
     Safefree(parameter_);
 }
 
-static void
+void
 free_problem(pTHX_ struct problem *problem_) {
     for (int i = 0; i < problem_->l; ++i) {
         struct feature_node *feature_vector = problem_->x[i];
@@ -45,7 +50,7 @@ free_problem(pTHX_ struct problem *problem_) {
     Safefree(problem_);
 }
 
-static struct feature_node *
+struct feature_node *
 HV2feature(pTHX_ HV *feature_hash) {
     int feature_vector_size = hv_iterinit(feature_hash) + 1;
     struct feature_node *feature_vector;
@@ -66,7 +71,12 @@ HV2feature(pTHX_ HV *feature_hash) {
     return feature_vector;
 }
 
+}  // namespace
+
 MODULE = Algorithm::LibLinear  PACKAGE = Algorithm::LibLinear::Model::Raw  PREFIX = ll_
+
+BOOT:
+    set_print_string_function(dummy_puts);
 
 PROTOTYPES: DISABLE
 
@@ -197,7 +207,7 @@ ll_DESTROY(self)
 CODE:
     free_and_destroy_model(&self);
 
-MODULE = Algorithm::LibLinear  PACKAGE = Algorithm::LibLinear::Parameter  PREFIX = ll_
+MODULE = Algorithm::LibLinear  PACKAGE = Algorithm::LibLinear::TrainingParameter  PREFIX = ll_
 
 PROTOTYPES: DISABLE
 
@@ -219,16 +229,29 @@ CODE:
           " weights.");
     }
     RETVAL = alloc_parameter(num_weights);
-    RETVAL->solver_type = solver_type;
-    RETVAL->eps = epsilon;
-    RETVAL->C = cost;
-    int *weight_labels_ = RETVAL->weight_label;
-    double *weights_ = RETVAL->weight;
-    for (int i = 0; i < num_weights; ++i) {
-        weight_labels_[i] = SvIV(*av_fetch(weight_labels, i, 0));
-        weights_[i] = SvNV(*av_fetch(weights, i, 0));
+    dXCPT;
+    XCPT_TRY_START {
+        RETVAL->solver_type = solver_type;
+        RETVAL->eps = epsilon;
+        RETVAL->C = cost;
+        int *weight_labels_ = RETVAL->weight_label;
+        double *weights_ = RETVAL->weight;
+        for (int i = 0; i < num_weights; ++i) {
+            weight_labels_[i] = SvIV(*av_fetch(weight_labels, i, 0));
+            weights_[i] = SvNV(*av_fetch(weights, i, 0));
+        }
+        RETVAL->p = loss_sensitivity;
+        // It's okay to pass NULL as 1st argument because it is never used.
+        const char *message = check_parameter(NULL, RETVAL);
+        if (message) {
+            Perl_croak(
+                aTHX_ "Training parameter is in invalid state: %s", message);
+        }
+    } XCPT_TRY_END
+    XCPT_CATCH {
+        free_parameter(RETVAL);
+        XCPT_RETHROW;
     }
-    RETVAL->p = loss_sensitivity;
 OUTPUT:
     RETVAL
 
