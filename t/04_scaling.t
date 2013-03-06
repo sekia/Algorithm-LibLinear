@@ -8,7 +8,7 @@ my $data_set = Algorithm::LibLinear::DataSet->new(data_set => [
         label => 1,
     },
     +{
-        feature => +{ 1 => 2.0, 2 => 2.0, 3 => 1.73, 4 => -1.0, },
+        feature => +{ 1 => 2.0, 2 => 2.0, 3 => 1.73, 4 => -1.0, 5 => 1, },
         label => 1,
     },
     +{
@@ -16,7 +16,7 @@ my $data_set = Algorithm::LibLinear::DataSet->new(data_set => [
         label => 1,
     },
     +{
-        feature => +{ 1 => 4.0, 2 => 2.0, 3 => 2.23, 4 => -3.0, },
+        feature => +{ 1 => 4.0, 2 => 2.0, 3 => 2.23, 4 => -3.0, 5 => 1, },
         label => 1,
     },
 ]);
@@ -57,7 +57,7 @@ my @nums_nonzero_features =
     map { 0 + keys %{ $_->{feature} } } @{ $scaled_data_set->as_arrayref };
 is_deeply(
     \@nums_nonzero_features,
-    [ 2, 3, 3, 3, ],
+    [ 2, 4, 3, 4, ],
     'Constant feature value should be ommited.',
 );
 

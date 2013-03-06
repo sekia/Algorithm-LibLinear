@@ -96,7 +96,7 @@ sub compute_min_max_values {
     my $last_index = max map { keys %$_ } @feature_vectors;
     my @min_max_values;
     for my $i (1 .. $last_index) {
-        my ($min, $max) = minmax map { $_->{$i} // () } @feature_vectors;
+        my ($min, $max) = minmax map { $_->{$i} // 0 } @feature_vectors;
         push @min_max_values, [ $min, $max ];
     }
     return \@min_max_values;
