@@ -41,6 +41,7 @@ T_LIBLINEAR_PROBLEM
 			${$ALIAS?\q[GvNAME(CvGV(cv))]:\qq[\"$pname\"]},
 			\"$var\", \"$ntype\");
     }
+
 OUTPUT
 T_LIBLINEAR_MODEL
 	sv_setref_pv($arg, \"Algorithm::LibLinear::Model::Raw\", (void*)$var);

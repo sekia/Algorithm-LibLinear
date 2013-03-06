@@ -9,22 +9,7 @@ use XSLoader;
 
 our $VERSION = '0.01';
 
-our %solvers = (
-    # Solvers for classification problem
-    L2R_LR => 0,
-    L2R_L2LOSS_SVC_DUAL => 1,
-    L2R_L2LOSS_SVC => 2,
-    L2R_L1LOSS_SVC_DUAL => 3,
-    MCSVM_CS => 4,
-    L1R_L2LOSS_SVC => 5,
-    L1R_LR => 6,
-    L2R_LR_DUAL => 7,
-
-    # Solvers for regression problem
-    L2R_L2LOSS_SVR => 11,
-    L2R_L2LOSS_SVR_DUAL => 12,
-    L2R_L1LOSS_SVR_DUAL => 13,
-);
+XSLoader::load(__PACKAGE__, $VERSION);
 
 my %default_eps = (
     L2R_LR => 0.01,
@@ -42,12 +27,27 @@ my %default_eps = (
     L2R_L1LOSS_SVR_DUAL => 0.1,
 );
 
-XSLoader::load(__PACKAGE__, $VERSION);
+my %solvers = (
+    # Solvers for classification problem
+    L2R_LR => 0,
+    L2R_L2LOSS_SVC_DUAL => 1,
+    L2R_L2LOSS_SVC => 2,
+    L2R_L1LOSS_SVC_DUAL => 3,
+    MCSVM_CS => 4,
+    L1R_L2LOSS_SVC => 5,
+    L1R_LR => 6,
+    L2R_LR_DUAL => 7,
+
+    # Solvers for regression problem
+    L2R_L2LOSS_SVR => 11,
+    L2R_L2LOSS_SVR_DUAL => 12,
+    L2R_L1LOSS_SVR_DUAL => 13,
+);
 
 sub new {
     args
         my $class => 'ClassName',
-        my $cost => +{ isa => 'Int', default => 1, },
+        my $cost => +{ isa => 'Num', default => 1, },
         my $epsilon => +{ isa => 'Num', optional => 1, },
         my $loss_sensitivity => +{ isa => 'Num', default => 0.1, },
         my $solver => +{
@@ -60,13 +60,12 @@ sub new {
         };
 
     $epsilon //= $default_eps{$solver};
-
     my (@weight_labels, @weights);
     for my $weight (@$weights) {
         push @weight_labels, $weight->{label};
         push @weights, $weight->{weight};
     }
-    my $parameter = Algorithm::LibLinear::TrainingParameter->new(
+    my $training_parameter = Algorithm::LibLinear::TrainingParameter->new(
         $solvers{$solver},
         $epsilon,
         $cost,
@@ -74,8 +73,10 @@ sub new {
         \@weights,
         $loss_sensitivity,
     );
-    bless +{ parameter => $parameter } => $class;
+    bless +{ training_parameter => $training_parameter } => $class;
 }
+
+sub cost { $_[0]->training_parameter->cost }
 
 sub cross_validation {
     args
@@ -83,10 +84,12 @@ sub cross_validation {
         my $data_set => 'Algorithm::LibLinear::DataSet',
         my $num_folds => 'Int';
 
-    my $targets =
-        $self->parameter->cross_validation($data_set->as_problem, $num_folds);
+    my $targets = $self->training_parameter->cross_validation(
+        $data_set->as_problem,
+        $num_folds,
+    );
     my @labels = map { $_->{label} } @{ $data_set->as_arrayref };
-    if ($self->parameter->is_regression_solver) {
+    if ($self->is_regression_solver) {
         my $total_square_error = 0;
         for my $i (0 .. $data_set->size - 1) {
             $total_square_error += ($targets->[$i] - $labels[$i]) ** 2;
@@ -103,7 +106,13 @@ sub cross_validation {
     }
 }
 
-sub parameter { $_[0]->{parameter} }
+sub epsilon { $_[0]->training_parameter->epsilon }
+
+sub is_regression_solver { $_[0]->training_parameter->is_regression_solver }
+
+sub loss_sensitivity { $_[0]->training_parameter->loss_sensitivity }
+
+sub training_parameter { $_[0]->{training_parameter} }
 
 sub train {
     args
@@ -112,9 +121,20 @@ sub train {
 
     my $raw_model = Algorithm::LibLinear::Model::Raw->train(
         $data_set->as_problem,
-        $self->parameter,
+        $self->training_parameter,
     );
     Algorithm::LibLinear::Model->new(raw_model => $raw_model);
+}
+
+sub weights {
+    args
+        my $self;
+
+    my $labels = $self->training_parameter->weight_labels;
+    my $weights = $self->training_parameter->weights;
+    [ map {
+        +{ label => $labels->[$_], weight => $weights->[$_], }
+    } 0 .. $#$labels ];
 }
 
 1;

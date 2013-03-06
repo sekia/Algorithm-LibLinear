@@ -12,8 +12,13 @@ struct parameter *
 alloc_parameter(pTHX_ int num_weights) {
     struct parameter *parameter_;
     Newx(parameter_, 1, struct parameter);
-    Newx(parameter_->weight_label, num_weights, int);
-    Newx(parameter_->weight, num_weights, double);
+    if (num_weights == 0) {
+        parameter_->weight_label = NULL;
+        parameter_->weight = NULL;
+    } else {
+        Newx(parameter_->weight_label, num_weights, int);
+        Newx(parameter_->weight, num_weights, double);
+    }
     parameter_->nr_weight = num_weights;
     return parameter_;
 }
@@ -102,6 +107,7 @@ ll_class_labels(self)
     struct model *self;
 CODE:
     RETVAL = newAV();
+    av_extend(RETVAL, self->nr_class - 1);
     for (int i = 0; i < self->nr_class; ++i) {
         av_push(RETVAL, newSViv(self->label[i]));
     }
@@ -156,6 +162,7 @@ CODE:
     Newx(estimated_probabilities, num_classes, double);
     predict_probability(self, feature_vector, estimated_probabilities);
     RETVAL = newAV();
+    av_extend(RETVAL, num_classes - 1);
     for (int i = 0; i < num_classes; ++i) {
         av_push(RETVAL, newSVnv(estimated_probabilities[i]));
     }
@@ -178,6 +185,7 @@ CODE:
     predict_values(self, feature_vector, decision_values);
     bool is_probability_model = check_probability_model(self);
     RETVAL = newAV();
+    av_extend(RETVAL, num_decision_values - 1);
     for (int i = 0; i < num_decision_values; ++i) {
         SV *decision_value = is_probability_model ?
           newSVnv(decision_values[i]) : newSViv((int)decision_values[i]);
@@ -265,6 +273,7 @@ CODE:
     Newx(targets, problem_->l, double);
     cross_validation(problem_, self, num_folds, targets);
     RETVAL = newAV();
+    av_extend(RETVAL, problem_->l - 1);
     for (int i = 0; i < problem_->l; ++i) {
         av_push(RETVAL, newSVnv(targets[i]));
     }
@@ -280,6 +289,54 @@ CODE:
       self->solver_type == L2R_L2LOSS_SVR
       || self->solver_type == L2R_L1LOSS_SVR_DUAL
       || self->solver_type == L2R_L2LOSS_SVR_DUAL;
+OUTPUT:
+    RETVAL
+
+double
+ll_cost(self)
+    struct parameter *self;
+CODE:
+    RETVAL = self->C;
+OUTPUT:
+    RETVAL
+
+double
+ll_epsilon(self)
+    struct parameter *self;
+CODE:
+    RETVAL = self->eps;
+OUTPUT:
+    RETVAL
+
+double
+ll_loss_sensitivity(self)
+    struct parameter *self;
+CODE:
+    RETVAL = self->p;
+OUTPUT:
+    RETVAL
+
+AV *
+ll_weights(self)
+    struct parameter *self;
+CODE:
+    RETVAL = newAV();
+    av_extend(RETVAL, self->nr_weight - 1);
+    for (int i = 0; i < self->nr_weight; ++i) {
+        av_push(RETVAL, newSVnv(self->weight[i]));
+    }
+OUTPUT:
+    RETVAL
+
+AV *
+ll_weight_labels(self)
+    struct parameter *self;
+CODE:
+    RETVAL = newAV();
+    av_extend(RETVAL, self->nr_weight - 1);
+    for (int i = 0; i < self->nr_weight; ++i) {
+        av_push(RETVAL, newSViv(self->weight_label[i]));
+    }
 OUTPUT:
     RETVAL
 
