@@ -1,5 +1,7 @@
 use strict;
 use warnings;
+use File::Temp;
+use Test::Exception::LessClever;
 use Test::More;
 
 BEGIN { use_ok 'Algorithm::LibLinear' }
@@ -32,6 +34,22 @@ is $classifier->predict(feature => $data_set->as_arrayref->[0]{feature}), 1;
 
 my $accuracy = $svm->cross_validation(data_set => $data_set, num_folds => 5);
 cmp_ok $accuracy, '>', 0.8;
+
+my $temp_file;
+{
+    my $guard = File::Temp->new;
+    $temp_file = $guard->filename;
+    $classifier->save(filename => $temp_file);
+    ok +(-s $temp_file > 0), 'Model object can be written in a file.';
+
+    lives_ok {
+        Algorithm::LibLinear::Model->load(filename => $guard->filename);
+    } 'Model can be resumed from a file.';
+}
+# $temp_file is no longer exists here.
+throws_ok {
+    Algorithm::LibLinear::Model->load(filename => $temp_file);
+} qr/Failed to load a model/i;
 
 done_testing;
 

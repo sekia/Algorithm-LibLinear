@@ -100,7 +100,12 @@ ll_load(klass, filename)
     const char *klass;
     const char *filename;
 CODE:
-    load_model(filename);
+    RETVAL = load_model(filename);
+    if (!RETVAL) {
+        Perl_croak(aTHX_ "Failed to load a model from file: %s.", filename);
+    }
+OUTPUT:
+    RETVAL
 
 AV *
 ll_class_labels(self)
