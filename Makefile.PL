@@ -3,6 +3,9 @@ use inc::Module::Install;
 name 'Algorithm-LibLinear';
 all_from 'lib/Algorithm/LibLinear.pm';
 
+requires 'List::MoreUtils';
+requires 'Smart::Args';
+
 requires_cplusplus;
 use_xshelper '-clean', '-realclean';
 cc_include_paths 'src/liblinear', 'src/liblinear/blas';
