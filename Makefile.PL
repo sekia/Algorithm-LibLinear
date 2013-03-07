@@ -3,13 +3,11 @@ use inc::Module::Install;
 name 'Algorithm-LibLinear';
 all_from 'lib/Algorithm/LibLinear.pm';
 
-checklibs lib => 'blas';
-
 requires_cplusplus;
 use_xshelper '-clean', '-realclean';
-cc_include_paths 'src/liblinear';
+cc_include_paths 'src/liblinear', 'src/liblinear/blas';
 cc_src_paths 'src';
-cc_libs 'blas', 'stdc++';
+cc_libs 'stdc++';
 
 tests 't/*.t';
 author_tests 'xt';
