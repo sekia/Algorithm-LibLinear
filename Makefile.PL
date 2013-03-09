@@ -12,7 +12,7 @@ cc_include_paths 'src/liblinear', 'src/liblinear/blas';
 cc_src_paths 'src';
 cc_libs 'stdc++';
 
-tests 't/*.t';
+tests 't/*.t t/*/*.t t/*/*/*.t';
 author_tests 'xt';
 
 test_requires 'Test::Exception::LessClever';
