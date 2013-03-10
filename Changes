@@ -1,4 +1,7 @@
 Revision history for Perl extension Algorithm::LinearSVM
 
-0.01    Tue Feb 26 17:30:40 2013
+0.02    Sat Mar 10 2013
+        - Release for CPAN.
+
+0.01    Tue Feb 26 2013
         - original version
