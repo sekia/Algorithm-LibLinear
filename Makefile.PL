@@ -1,6 +1,7 @@
 use inc::Module::Install;
 
 name 'Algorithm-LibLinear';
+license 'mit';
 all_from 'lib/Algorithm/LibLinear.pm';
 
 requires 'List::MoreUtils';
