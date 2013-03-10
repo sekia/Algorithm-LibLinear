@@ -8,3 +8,9 @@ __DATA__
 Koichi SATOH
 sato@seesaa.co.jp
 Algorithm::LibLinear
+LIBLINEAR
+LIBSVM
+MERCHANTABILITY
+NONINFRINGEMENT
+Redistributions
+sublicense
