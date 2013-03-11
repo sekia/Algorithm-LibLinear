@@ -241,7 +241,7 @@ CODE:
           "The number of weight labels is not equal to the number of"
           " weights.");
     }
-    RETVAL = alloc_parameter(num_weights);
+    RETVAL = alloc_parameter(aTHX_ num_weights);
     dXCPT;
     XCPT_TRY_START {
         RETVAL->solver_type = solver_type;
@@ -262,7 +262,7 @@ CODE:
         }
     } XCPT_TRY_END
     XCPT_CATCH {
-        free_parameter(RETVAL);
+        free_parameter(aTHX_ RETVAL);
         XCPT_RETHROW;
     }
 OUTPUT:
@@ -349,7 +349,7 @@ void
 ll_DESTROY(self)
     struct parameter *self;
 CODE:
-    free_parameter(self);
+    free_parameter(aTHX_ self);
     
 
 MODULE = Algorithm::LibLinear  PACKAGE = Algorithm::LibLinear::Problem  PREFIX = ll_
@@ -412,7 +412,7 @@ ll_new(klass, labels, features, bias = -1)
         RETVAL->n = bias < 0 ? max_feature_index : max_feature_index + 1;
     } XCPT_TRY_END
     XCPT_CATCH {
-        free_problem(RETVAL);
+        free_problem(aTHX_ RETVAL);
         XCPT_RETHROW;
     }
   OUTPUT:
@@ -446,4 +446,4 @@ void
 ll_DESTROY(self)
     struct problem *self;
   CODE:
-    free_problem(self);
+    free_problem(aTHX_ self);
