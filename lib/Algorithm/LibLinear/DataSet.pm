@@ -107,7 +107,7 @@ sub scale {
         my %scaled_feature;
         for my $index (keys %$feature) {
             my $unscaled = $feature->{$index};
-            my ($min, $max) = @{ $min_max_values->[$index - 1] };
+            my ($min, $max) = @{ $min_max_values->[$index - 1] // [0, 0] };
             next if $min == $max;
             given ($unscaled) {
                 when ($min) { $scaled_feature{$index} = $lower_bound }
