@@ -2,54 +2,80 @@ use strict;
 use warnings;
 use File::Temp;
 use Test::Exception::LessClever;
+use Test::LeakTrace;
 use Test::More;
 
 BEGIN { use_ok 'Algorithm::LibLinear' }
 
-my $svm = new_ok 'Algorithm::LibLinear' => [
-    cost => 1,
-    epsilon => 0.1,
-    solver => 'L2R_L2LOSS_SVC_DUAL',
-    weights => [
-        +{ label => 1, weight => 1, },
-        +{ label => -1, weight => 1, },
-    ],
-];
+my $input_data_set = do { local $/; <DATA> };
 
-my $data_set = Algorithm::LibLinear::DataSet->load(fh => \*DATA);
-isa_ok $data_set, 'Algorithm::LibLinear::DataSet';
-my $classifier = $svm->train(data_set => $data_set);
-isa_ok $classifier, 'Algorithm::LibLinear::Model';
-
-my @labels = sort { $a <=> $b } @{ $classifier->class_labels };
-is_deeply \@labels, [-1, 1];
-ok(
-    +(not $classifier->is_probability_model),
-    'L2R_L2LOSS_SVC_DUAL is a model of classifier.',
-);
-is $classifier->num_classes, 2;
-is $classifier->num_features, 13;  # bias factor is not counted in.
-
-is $classifier->predict(feature => $data_set->as_arrayref->[0]{feature}), 1;
-
-my $accuracy = $svm->cross_validation(data_set => $data_set, num_folds => 5);
-cmp_ok $accuracy, '>', 0.8;
-
-my $temp_file;
 {
-    my $guard = File::Temp->new;
-    $temp_file = $guard->filename;
-    $classifier->save(filename => $temp_file);
-    ok +(-s $temp_file > 0), 'Model object can be written in a file.';
+    my $learner = new_ok 'Algorithm::LibLinear' => [
+        cost => 1,
+        epsilon => 0.1,
+        solver => 'L2R_L2LOSS_SVC_DUAL',
+        weights => [
+            +{ label => 1, weight => 1, },
+            +{ label => -1, weight => 1, },
+        ],
+    ];
 
-    lives_ok {
-        Algorithm::LibLinear::Model->load(filename => $guard->filename);
-    } 'Model can be resumed from a file.';
+    my $data_set =
+        Algorithm::LibLinear::DataSet->load(string => $input_data_set);
+    isa_ok $data_set, 'Algorithm::LibLinear::DataSet';
+    my $classifier = $learner->train(data_set => $data_set);
+    isa_ok $classifier, 'Algorithm::LibLinear::Model';
+
+    my @labels = sort { $a <=> $b } @{ $classifier->class_labels };
+    is_deeply \@labels, [-1, 1];
+    ok(
+        +(not $classifier->is_probability_model),
+        'L2R_L2LOSS_SVC_DUAL is a model of classifier.',
+    );
+    is $classifier->num_classes, 2;
+    is $classifier->num_features, 13;  # bias factor is not counted in.
+
+    is(
+        $classifier->predict(feature => $data_set->as_arrayref->[0]{feature}),
+        1
+    );
+
+    my $accuracy =
+        $learner->cross_validation(data_set => $data_set, num_folds => 5);
+    cmp_ok $accuracy, '>', 0.8;
+
+    my $temp_file;
+    {
+        my $guard = File::Temp->new;
+        $temp_file = $guard->filename;
+        $classifier->save(filename => $temp_file);
+        ok +(-s $temp_file > 0), 'Model object can be written in a file.';
+
+        lives_ok {
+            Algorithm::LibLinear::Model->load(filename => $guard->filename);
+        } 'Model can be resumed from a file.';
+    }
+
+    # $temp_file is no longer exists here.
+    throws_ok {
+        Algorithm::LibLinear::Model->load(filename => $temp_file);
+    } qr/Failed to load a model/i;
 }
-# $temp_file is no longer exists here.
-throws_ok {
-    Algorithm::LibLinear::Model->load(filename => $temp_file);
-} qr/Failed to load a model/i;
+
+no_leaks_ok {
+    my $learner = Algorithm::LibLinear->new(
+        cost => 1,
+        epsilon => 0.1,
+        solver => 'L2R_L2LOSS_SVC_DUAL',
+        weights => [
+            +{ label => 1, weight => 1, },
+            +{ label => -1, weight => 1, },
+        ],
+    );
+    my $data_set =
+        Algorithm::LibLinear::DataSet->load(string => $input_data_set);
+    my $classifier = $learner->train(data_set => $data_set);
+};
 
 done_testing;
 
