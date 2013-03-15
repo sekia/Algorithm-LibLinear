@@ -13,7 +13,7 @@ sub new {
             isa => 'Algorithm::LibLinear::DataSet',
             optional => 1,
         },
-        my $lower_bound => +{ isa => 'Num', default => -1.0, },
+        my $lower_bound => +{ isa => 'Num', default => 0, },
         my $min_max_values => +{
             isa => 'ArrayRef[ArrayRef[Num]]',
             optional => 1,
@@ -29,8 +29,8 @@ sub new {
         upper_bound => $upper_bound,
     } => $class;
 
-    $self->{min_max_values} =
-        $min_max_values // $self->compute_min_max_values(data_set => $data_set);
+    $self->{min_max_values} = $min_max_values
+        // $self->compute_min_max_values(data_set => $data_set);
 
     return $self;
 }
