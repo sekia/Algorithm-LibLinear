@@ -56,7 +56,7 @@ free_problem(pTHX_ struct problem *problem_) {
 }
 
 struct feature_node *
-HV2feature(pTHX_ HV *feature_hash) {
+hv2feature(pTHX_ HV *feature_hash) {
     int feature_vector_size = hv_iterinit(feature_hash) + 1;
     struct feature_node *feature_vector;
     Newx(
@@ -148,7 +148,7 @@ ll_predict(self, feature_hash)
     struct model *self;
     HV *feature_hash;
 CODE:
-    struct feature_node *feature_vector = HV2feature(aTHX_ feature_hash);
+    struct feature_node *feature_vector = hv2feature(aTHX_ feature_hash);
     double prediction = predict(self, feature_vector);
     Safefree(feature_vector);
     RETVAL = check_probability_model(self) ?
@@ -161,7 +161,7 @@ ll_predict_probability(self, feature_hash)
     struct model *self;
     HV *feature_hash;
 CODE:
-    struct feature_node *feature_vector = HV2feature(aTHX_ feature_hash);
+    struct feature_node *feature_vector = hv2feature(aTHX_ feature_hash);
     double *estimated_probabilities;
     int num_classes = get_nr_class(self);
     Newx(estimated_probabilities, num_classes, double);
@@ -181,7 +181,7 @@ ll_predict_values(self, feature_hash)
     struct model *self;
     HV *feature_hash;
 CODE:
-    struct feature_node *feature_vector = HV2feature(aTHX_ feature_hash);
+    struct feature_node *feature_vector = hv2feature(aTHX_ feature_hash);
     int num_classes = get_nr_class(self);
     int num_decision_values =
       num_classes == 2 && self->param.solver_type != MCSVM_CS ? 1 : num_classes;
