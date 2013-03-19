@@ -47,9 +47,9 @@ sub predict_probability {
         my $feature => 'Algorithm::LibLinear::Feature';
 
     unless ($self->is_probability_model) {
-        Carp::croak(
-            'This method makes no sense when the model is trained as a'
-            . ' classifier.',
+        Carp::carp(
+            'This method only makes sense when the model is configured for'
+                . ' classification based on logistic regression.'
         );
     }
     $self->raw_model->predict_probability($feature);

@@ -30,7 +30,7 @@ my $input_data_set = do { local $/; <DATA> };
     is_deeply \@labels, [-1, 1];
     ok(
         +(not $classifier->is_probability_model),
-        'L2R_L2LOSS_SVC_DUAL is a model of classifier.',
+        'L2R_L2LOSS_SVC_DUAL is a model for SVC.',
     );
     is $classifier->num_classes, 2;
     is $classifier->num_features, 13;  # bias factor is not counted in.
