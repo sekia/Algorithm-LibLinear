@@ -2,7 +2,7 @@ package Algorithm::LibLinear::ScalingParameter;
 
 use 5.014;
 use Carp qw//;
-use List::MoreUtils qw/minmax/;
+use List::MoreUtils qw/none minmax/;
 use List::Util qw/max/;
 use Smart::Args;
 
@@ -39,22 +39,27 @@ sub load {
     args
         my $class => 'ClassName',
         my $filename => +{ isa => 'Str', optional => 1, },
-        my $fh => +{ isa => 'FileHandle', optional => 1, };
+        my $fh => +{ isa => 'FileHandle', optional => 1, },
+        my $string => +{ isa => 'FileHandle', optional => 1, };
 
-    unless ($filename or $fh) {
-        Carp::croak('Neither "filename" nor "fh" is given.');
+    if (none { defined  } ($filename, $fh, $string)) {
+        Carp::croak('No source specified.');
     }
-    open $fh, '<', $filename or Carp::croak($!) unless $fh;
+    my $source = $fh;
+    $source //= do {
+        open $fh, '<', +($filename // \$string) or Carp::croak($!);
+        $fh;
+    };
 
-    chomp(my $header = <$fh>);
+    chomp(my $header = <$source>);
     Carp::croak('At present, y-scaling is not supported.') if $header eq 'y';
     Carp::croak('Invalid format.') if $header ne 'x';
 
-    chomp(my $bounds = <$fh>);
+    chomp(my $bounds = <$source>);
     my ($lower_bound, $upper_bound) = split /\s+/, $bounds;
 
     my @min_max_values;
-    while (defined(my $min_max_values = <$fh>)) {
+    while (defined(my $min_max_values = <$source>)) {
         chomp $min_max_values;
         my (undef, $min, $max) = split /\s+/, $min_max_values;
         push @min_max_values, [ $min, $max ];
@@ -65,14 +70,6 @@ sub load {
         min_max_values => \@min_max_values,
         upper_bound => $upper_bound,
     );
-}
-
-sub parse {
-    args
-        my $class => 'ClassName',
-        my $dump => 'Str';
-    open my $str_fh, '<', \$dump or die $!;
-    $class->load(fh => $str_fh);
 }
 
 sub as_string {

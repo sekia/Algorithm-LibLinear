@@ -4,7 +4,7 @@ use 5.014;
 use Algorithm::LibLinear;  # For Algortihm::LibLinear::Problem
 use Algorithm::LibLinear::Types;
 use Carp qw//;
-use List::MoreUtils qw/any/;
+use List::MoreUtils qw/none/;
 use Smart::Args;
 
 sub new {
@@ -22,12 +22,12 @@ sub load {
         my $filename => +{ isa => 'Str', optional => 1, },
         my $string => +{ isa => 'Str', optional => 1, };
 
-    unless (any { defined } ($fh, $filename, $string)) {
+    if (none { defined } ($fh, $filename, $string)) {
         Carp::croak('No source specified.');
     }
     my $source = $fh;
     $source //= do {
-        open my $fh, '<', +($filename // \$string) or die $!;
+        open my $fh, '<', +($filename // \$string) or Carp::croak($!);
         $fh;
     };
     $class->new(data_set => $class->parse_input_file($source));
