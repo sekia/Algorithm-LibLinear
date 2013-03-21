@@ -8,9 +8,21 @@ __DATA__
 Koichi SATOH
 sato@seesaa.co.jp
 Algorithm::LibLinear
+API
+ArrayRefs
+fh
+filename
+indices
+L1
+L2
 LIBLINEAR
 LIBSVM
 MERCHANTABILITY
+misclassification
+multiclass
 NONINFRINGEMENT
 Redistributions
 sublicense
+SVC
+SVM
+SVR

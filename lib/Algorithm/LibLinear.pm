@@ -152,14 +152,20 @@ Algorithm::LibLinear - A Perl binding for LIBLINEAR.
     cost => 1,
     epsilon => 0.01,
     solver => 'L2R_L2LOSS_SVC_DUAL',
+    weights => [
+      +{ label => 1, weight => 1, },
+      +{ label => -1, weight => 1, },
+    ],
   );
   # Loads a training data set from DATA filehandle.
   my $data_set = Algorithm::LibLinear::DataSet->load(fh => \*DATA);
+  # Executes cross validation.
+  my $accuracy = $learner->cross_validation(data_set => $data_set, num_folds => 5);
   # Executes training.
   my $classifier = $learner->train(data_set => $data_set);
   # Determines which (+1 or -1) is the class for the given feature to belong.
   my $class_label = $classifier->predict(feature => +{ 1 => 0.38, 2 => -0.5, ... });
-
+  
   __DATA__
   +1 1:0.708333 2:1 3:1 4:-0.320755 5:-0.105023 6:-1 7:1 8:-0.419847 9:-1 10:-0.225806 12:1 13:-1 
   -1 1:0.583333 2:-1 3:0.333333 4:-0.603774 5:1 6:-1 7:1 8:0.358779 9:-1 10:-0.483871 12:-1 13:1 
@@ -170,7 +176,98 @@ Algorithm::LibLinear - A Perl binding for LIBLINEAR.
 
 =head1 DESCRIPTION
 
-Algorithm::LibLinear is a XS module that provides features of LIBLINEAR, a fast C library for classification and regression analysis.
+Algorithm::LibLinear is an XS module that provides features of LIBLINEAR, a fast C library for classification and regression.
+
+=head1 METHODS
+
+=head2 new([cost => 1] [, epsilon => 0.1] [, loss_sensitivity => 0.1] [, solver => 'L2R_L2LOSS_SVC_DUAL'] [, weights => []])
+
+Constructor. You can set several named parameters:
+
+=over 4
+
+=item cost
+
+Penalty cost for misclassification (i.e., C<-c> option for LIBLINEAR's C<train> command.)
+
+=item epsilon
+
+Termination criterion (C<-e>.)
+
+Default value of this parameter depends on the value of C<solver>.
+
+=item loss_sensitivity
+
+Epsilon in loss function of SVR (C<-p>.)
+
+=item solver
+
+Kind of solver (C<-s>.)
+
+For classification:
+
+=over 4
+
+=item 'L2R_LR' - L2-regularized logistic regression
+
+=item 'L2R_L2LOSS_SVC_DUAL' - L2-regularized L2-loss SVC (dual problem)
+
+=item 'L2R_L2LOSS_SVC' - L2-regularized L2-loss SVC (primal problem)
+
+=item 'L2R_L1LOSS_SVC_DUAL' - L2-regularized L1-loss SVC (dual problem)
+
+=item 'MCSVM_CS' - Crammer-Singer multiclass SVM
+
+=item 'L1R_L2LOSS_SVC' - L1-regularized L2-loss SVC
+
+=item 'L1R_LR' - L1-regularized logistic regression (primal problem)
+
+=item 'L1R_LR_DUAL' -  L1-regularized logistic regression (dual problem)
+
+=back
+
+For regression:
+
+=over 4
+
+=item 'L2R_L2LOSS_SVR' - L2-regularized L2-loss SVR (primal problem)
+
+=item 'L2R_L2LOSS_SVR_DUAL' - L2-regularized L2-loss SVR (dual problem)
+
+=item 'L2R_L1LOSS_SVR_DUAL' - L2-regularized L1-loss SVR (dual problem)
+
+=back
+
+=item weights
+
+Weights adjust the cost parameter of different classes (C<-wi>.)
+
+For example,
+
+  my $learner = Algorithm::LibLinear->new(
+    weights => [
+      +{ label => 1, weight => 0.5 },
+      +{ label => 2, weight => 1 },
+      +{ label => 3, weight => 0.5 },
+    ],
+  );
+
+is giving a doubling weight for class 2. This means that samples belonging to class 2 have stronger effect than other samples belonging class 1 or 3 on learning.
+
+This option is useful when the number of training samples of each class is not balanced.
+
+=back
+
+=head2 cross_validation(data_set => $data_set, num_folds => $num_folds)
+
+Evaluates training parameter using N-fold cross validation method.
+Given data set will be split into N parts. N-1 of them will be used as a training set and the rest 1 part will be used as a test set.
+The evaluation iterates N times using each different part as a test set. Then average accuracy is returned as result.
+
+=head2 train(data_set => $data_set)
+
+Executes training and returns a trained L<Algorithm::LibLinear::Model> instance.
+C<data_set> is same as the C<cross_validation>'s.
 
 =head1 AUTHOR
 

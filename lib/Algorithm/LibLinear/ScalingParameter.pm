@@ -118,3 +118,63 @@ sub min_max_values { $_[0]->{min_max_values} }
 sub upper_bound { $_[0]->{upper_bound} }
 
 1;
+
+__DATA__
+
+=head1 NAME
+
+Algorithm::LibLinear::ScalingParameter
+
+=head1 SYNOPSIS
+
+  use Algorithm::LibLinear::DataSet;
+  use Algorithm::LibLinear::ScalingParameter;
+  
+  my $training_data = Algorithm::LibLinear::DataSet->load(fh => \*DATA);
+  my $parameter = Algorithm::LibLinear::ScalingParameter->new(data_set => $training_data);
+  my $scaled_training_data = $training_data->scale(parameter => $parameter);
+  say $scaled_training_data->as_string;
+  # 1 1:0.8541665 2:1 3:1 4:0.3396225 5:0.4474885 6:0 7:1 8:0.2900765 9:0 10:0.387097 12:1 13:0
+  # -1 1:0.7916665 2:0 3:0.6666665 4:0.198113 5:1 6:0 7:1 8:0.6793895 9:0 10:0.2580645 12:0 13:1
+  # 1 1:0.5833335 2:1 3:0.3333335 4:0.283019 5:0.308219 6:0 7:0 8:0.53435115 9:0 10:0.048387 11:0 12:0 13:1
+  # ...
+  
+  __DATA__
+  +1 1:0.708333 2:1 3:1 4:-0.320755 5:-0.105023 6:-1 7:1 8:-0.419847 9:-1 10:-0.225806 12:1 13:-1 
+  -1 1:0.583333 2:-1 3:0.333333 4:-0.603774 5:1 6:-1 7:1 8:0.358779 9:-1 10:-0.483871 12:-1 13:1 
+  +1 1:0.166667 2:1 3:-0.333333 4:-0.433962 5:-0.383562 6:-1 7:-1 8:0.0687023 9:-1 10:-0.903226 11:-1 12:-1 13:1 
+  ...
+
+=head1 DESCRIPTION
+
+C<Algorithm::LibLinear::ScalingParameter> contains configuration for feature scaling. The parameter is used by L<Algorithm::LibLinear::DataSet>'s C<scale> method.
+
+=head1 METHODS
+
+=head2 new([data_set => $data_set] [, lower_bound => 0] [, upper_bound => 1.0] [, min_max_values => \@min_max_values])
+
+Constructor. At least you have to specify either C<data_set> or C<min_max_values>.
+C<data_set> is an instance of C<Algorithm::LibLinear::DataSet>. 
+C<min_max_values> is an ArrayRef of 2-element ArrayRefs. Each ArrayRef should contain minimum and maximum value of corresponding feature.
+
+=head2 load([fh => \*FH] [, filename => $path] [, string => $string])
+
+Class method.
+
+Restores parameter from LIBSVM/LIBLINEAR scaling parameter file.
+
+=head2 as_string
+
+Dumps scaling parameter as LIBSVM/LIBLINEAR format.
+
+=head2 lower_bound
+
+=head2 upper_bound
+
+The lower/upper bound of scaled feature value.
+
+=head2 save([filename => $path] [, fh => \*FH])
+
+Writes scaling parameter into a file.
+
+=cut
