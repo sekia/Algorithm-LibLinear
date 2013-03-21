@@ -374,6 +374,7 @@ ll_new(klass, labels, features, bias = -1)
     }
 
     RETVAL = alloc_problem(aTHX_ num_training_data);
+    bool has_bias = bias >= 0;
     dXCPT;
     XCPT_TRY_START {
         double *labels_ = RETVAL->y;
@@ -388,7 +389,8 @@ ll_new(klass, labels, features, bias = -1)
                 Perl_croak(aTHX_ "Not a HASH reference.");
             }
             HV *feature_hash = (HV *)SvRV(feature);
-            int feature_vector_size = hv_iterinit(feature_hash) + 1;
+            int feature_vector_size =
+                hv_iterinit(feature_hash) + 1 + (has_bias ? 0 : 1);
             struct feature_node *feature_vector;
             Newx(
               feature_vector,
@@ -396,6 +398,7 @@ ll_new(klass, labels, features, bias = -1)
               struct feature_node);
             HE *nonzero_element;
             struct feature_node *curr = feature_vector;
+            // XXX: Assuming that order of features doesn't matter. Right?
             while (nonzero_element = hv_iternext(feature_hash)) {
                 SV *index = HeSVKEY_force(nonzero_element);
                 SV *value = HeVAL(nonzero_element);
@@ -404,12 +407,23 @@ ll_new(klass, labels, features, bias = -1)
                 max_feature_index = std::max(max_feature_index, curr->index);
                 ++curr;
             }
+            // Take a place for bias feature. This slot will be filled later.
+            if (has_bias) { ++curr; }
             // Sentinel. LIBLINEAR doesn't care about its value.
             curr->index = -1;
             features_[i] = feature_vector;
         }
         RETVAL->bias = bias;
-        RETVAL->n = bias < 0 ? max_feature_index : max_feature_index + 1;
+        if (has_bias) {
+            ++max_feature_index;
+            for (int i = 0; i < num_training_data; ++i) {
+                struct feature_node *bias_feature = RETVAL->x[i];
+                while ((bias_feature + 1)->index != -1) { ++bias_feature; }
+                bias_feature->index = max_feature_index;
+                bias_feature->value = bias;
+            }
+        }
+        RETVAL->n = max_feature_index;
     } XCPT_TRY_END
     XCPT_CATCH {
         free_problem(aTHX_ RETVAL);
