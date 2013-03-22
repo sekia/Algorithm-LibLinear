@@ -65,7 +65,7 @@ hv2feature(pTHX_ HV *feature_hash) {
       struct feature_node);
     HE *nonzero_element;
     struct feature_node *curr = feature_vector;
-    while (nonzero_element = hv_iternext(feature_hash)) {
+    while ((nonzero_element = hv_iternext(feature_hash))) {
         SV *index = HeSVKEY_force(nonzero_element);
         SV *value = HeVAL(nonzero_element);
         curr->index = SvIV(index);
@@ -399,7 +399,7 @@ ll_new(klass, labels, features, bias = -1)
             HE *nonzero_element;
             struct feature_node *curr = feature_vector;
             // XXX: Assuming that order of features doesn't matter. Right?
-            while (nonzero_element = hv_iternext(feature_hash)) {
+            while ((nonzero_element = hv_iternext(feature_hash))) {
                 SV *index = HeSVKEY_force(nonzero_element);
                 SV *value = HeVAL(nonzero_element);
                 curr->index = SvIV(index);
