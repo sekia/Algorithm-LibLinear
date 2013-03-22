@@ -22,4 +22,6 @@ xshelper\.h
 ^[^/]+\.pl$
 ^\.shipit$
 ^\.git/
+^\.gitignore$
 \.sw[po]$
+^\.proverc$
