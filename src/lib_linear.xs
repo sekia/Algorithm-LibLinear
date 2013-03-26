@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cerrno>
+#include <cstdlib>
 #include <cstring>
 #include "linear.h"
 
@@ -37,6 +38,27 @@ alloc_problem(pTHX_ int num_training_data) {
 void
 dummy_puts(const char *) {}
 
+int
+find_max_feature_index(pTHX_ AV *features) {
+    int num_features = av_len(features) + 1;
+    int max_feature_index = 0;
+    for (int i = 0; i < num_features; ++i) {
+        SV *feature = *av_fetch(features, i, 0);
+        if (!(SvROK(feature) && SvTYPE(SvRV(feature)) == SVt_PVHV)) {
+            Perl_croak(aTHX_ "Not a HASH reference.");
+        }
+        HV *feature_hash = (HV *)SvRV(feature);
+        hv_iterinit(feature_hash);
+        HE *nonzero_element;
+        while ((nonzero_element = hv_iternext(feature_hash))) {
+            I32 index_length;
+            int index = atoi(hv_iterkey(nonzero_element, &index_length));
+            if (max_feature_index < index) { max_feature_index = index; }
+        }
+    }
+    return max_feature_index;
+}
+
 void
 free_parameter(pTHX_ struct parameter *parameter_) {
     Safefree(parameter_->weight_label);
@@ -56,20 +78,26 @@ free_problem(pTHX_ struct problem *problem_) {
 }
 
 struct feature_node *
-hv2feature(pTHX_ HV *feature_hash) {
-    int feature_vector_size = hv_iterinit(feature_hash) + 1;
+hv2feature(
+    pTHX_ HV *feature_hash, int bias_index = 0, double bias = -1.0) {
+    bool has_bias = bias >= 0;
+    int feature_vector_size =
+        hv_iterinit(feature_hash) + (has_bias ? 1 : 0) + 1;
     struct feature_node *feature_vector;
-    Newx(
-      feature_vector,
-      feature_vector_size,
-      struct feature_node);
-    HE *nonzero_element;
+    Newx(feature_vector, feature_vector_size, struct feature_node);
+    char *index;
+    I32 index_length;
+    SV *value;
     struct feature_node *curr = feature_vector;
-    while ((nonzero_element = hv_iternext(feature_hash))) {
-        SV *index = HeSVKEY_force(nonzero_element);
-        SV *value = HeVAL(nonzero_element);
-        curr->index = SvIV(index);
+    // XXX: Assuming that order of features doesn't matter. Right?
+    while ((value = hv_iternextsv(feature_hash, &index, &index_length))) {
+        curr->index = atoi(index);
         curr->value = SvNV(value);
+        ++curr;
+    }
+    if (has_bias) {
+        curr->index = bias_index;
+        curr->value = bias;
         ++curr;
     }
     curr->index = -1;  // Sentinel. LIBLINEAR doesn't care about its value.
@@ -378,51 +406,24 @@ ll_new(klass, labels, features, bias = -1)
     dXCPT;
     XCPT_TRY_START {
         double *labels_ = RETVAL->y;
-        struct feature_node **features_ = RETVAL->x;
-        int max_feature_index = 0;
         for (int i = 0; i < num_training_data; ++i) {
             SV *label = *av_fetch(labels, i, 0);
             labels_[i] = SvIV(label);
-    
+        }
+
+        struct feature_node **features_ = RETVAL->x;
+        int max_feature_index =
+            find_max_feature_index(aTHX_ features) + (has_bias ? 1 : 0);
+        for (int i = 0; i < num_training_data; ++i) {
             SV *feature = *av_fetch(features, i, 0);
             if (!(SvROK(feature) && SvTYPE(SvRV(feature)) == SVt_PVHV)) {
                 Perl_croak(aTHX_ "Not a HASH reference.");
             }
             HV *feature_hash = (HV *)SvRV(feature);
-            int feature_vector_size =
-                hv_iterinit(feature_hash) + 1 + (has_bias ? 0 : 1);
-            struct feature_node *feature_vector;
-            Newx(
-              feature_vector,
-              feature_vector_size,
-              struct feature_node);
-            HE *nonzero_element;
-            struct feature_node *curr = feature_vector;
-            // XXX: Assuming that order of features doesn't matter. Right?
-            while ((nonzero_element = hv_iternext(feature_hash))) {
-                SV *index = HeSVKEY_force(nonzero_element);
-                SV *value = HeVAL(nonzero_element);
-                curr->index = SvIV(index);
-                curr->value = SvNV(value);
-                max_feature_index = std::max(max_feature_index, curr->index);
-                ++curr;
-            }
-            // Take a place for bias feature. This slot will be filled later.
-            if (has_bias) { ++curr; }
-            // Sentinel. LIBLINEAR doesn't care about its value.
-            curr->index = -1;
-            features_[i] = feature_vector;
+            features_[i] =
+                hv2feature(aTHX_ feature_hash, max_feature_index, bias);
         }
         RETVAL->bias = bias;
-        if (has_bias) {
-            ++max_feature_index;
-            for (int i = 0; i < num_training_data; ++i) {
-                struct feature_node *bias_feature = RETVAL->x[i];
-                while ((bias_feature + 1)->index != -1) { ++bias_feature; }
-                bias_feature->index = max_feature_index;
-                bias_feature->value = bias;
-            }
-        }
         RETVAL->n = max_feature_index;
     } XCPT_TRY_END
     XCPT_CATCH {
