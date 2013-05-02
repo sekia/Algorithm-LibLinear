@@ -16,6 +16,7 @@ cc_libs 'stdc++';
 tests 't/*.t t/*/*.t t/*/*/*.t';
 author_tests 'xt';
 
+test_requires 'Test::Deep';
 test_requires 'Test::Exception::LessClever';
 test_requires 'Test::LeakTrace';
 test_requires 'Test::More';
