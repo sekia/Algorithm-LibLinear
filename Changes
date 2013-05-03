@@ -1,5 +1,8 @@
 Revision history for Perl extension Algorithm::LinearSVM
 
+0.03    Fri May 3 2013
+        - Fix a test to pass on environment which is long double enabled.
+
 0.02    Sat Mar 10 2013
         - Release for CPAN.
 
