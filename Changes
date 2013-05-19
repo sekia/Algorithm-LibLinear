@@ -1,5 +1,8 @@
 Revision history for Perl extension Algorithm::LinearSVM
 
+0.04    Sun May 19 2013
+        - Fix incorrect sparse vector scaling.
+
 0.03    Fri May 3 2013
         - Fix a test to pass on environment which is long double enabled.
 
