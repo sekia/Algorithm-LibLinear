@@ -42,7 +42,7 @@ sub load {
         my $fh => +{ isa => 'FileHandle', optional => 1, },
         my $string => +{ isa => 'FileHandle', optional => 1, };
 
-    if (none { defined  } ($filename, $fh, $string)) {
+    if (none { defined } ($filename, $fh, $string)) {
         Carp::croak('No source specified.');
     }
     my $source = $fh;

@@ -105,20 +105,20 @@ sub scale {
         my $feature = $_->{feature};
         my $label = $_->{label};
         my %scaled_feature;
-        for my $index (keys %$feature) {
-            my $unscaled = $feature->{$index};
+        for my $index (1 .. @$min_max_values) {
+            my $unscaled = $feature->{$index} // 0;
             my ($min, $max) = @{ $min_max_values->[$index - 1] // [0, 0] };
             next if $min == $max;
-            given ($unscaled) {
-                when ($min) { $scaled_feature{$index} = $lower_bound }
-                when ($max) { $scaled_feature{$index} = $upper_bound }
-                default {
-                    my $ratio = ($_ - $min) / ($max - $min);
-                    my $scaled =
-                        $lower_bound + ($upper_bound - $lower_bound) * $ratio;
-                    $scaled_feature{$index} = $scaled;
-                }
+            my $scaled;
+            if ($unscaled == $min) {
+                $scaled = $lower_bound;
+            } elsif ($unscaled == $max) {
+                $scaled = $upper_bound;
+            } else {
+                my $ratio = ($unscaled - $min) / ($max - $min);
+                $scaled = $lower_bound + ($upper_bound - $lower_bound) * $ratio;
             }
+            $scaled_feature{$index} = $scaled if $scaled != 0;
         }
         +{ feature => \%scaled_feature, label => $label, };
     } @{ $self->as_arrayref };

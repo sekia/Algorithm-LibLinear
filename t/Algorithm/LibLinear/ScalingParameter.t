@@ -5,7 +5,7 @@ use Test::More;
 
 my $data_set = Algorithm::LibLinear::DataSet->load(fh => \*DATA);
 my $parameter = new_ok 'Algorithm::LibLinear::ScalingParameter' => [
-    data_set => $data_set,
+    data_set => $data_set
 ];
 ok my $scaled_data_set = $data_set->scale(parameter => $parameter);
 is $scaled_data_set->size, $data_set->size;
@@ -40,22 +40,48 @@ is $scaled_data_set->size, $data_set->size;
         map { 0 + keys %{ $_->{feature} } } @{ $scaled_data_set->as_arrayref };
     is_deeply(
         \@nums_nonzero_features,
-        [ 2, 4, 3, 4, ],
+        [ 1, 4, 3, 3, ],
         'Constant feature value should be ommited.',
     );
 }
 
 {
     my $data_set_with_additional_feature = Algorithm::LibLinear::DataSet->new(
-        data_set => [ +{ feature => +{ 1 => 1.0, 6 => 1.0, }, label => 1, } ],
+        data_set => [ +{ feature => +{ 1 => 2.0, 6 => 1.0, }, label => 1, } ],
     );
     lives_and {
         my $scaled_data_set =
             $data_set_with_additional_feature->scale(parameter => $parameter);
         my $scaled_feature = $scaled_data_set->as_arrayref->[0]{feature};
-        is 0 + keys %$scaled_feature, 1,
+        is 0 + keys %$scaled_feature, 3,
             'New feature should be ommited since scaling factor is unknown.';
     } 'Scaling data set with unknown feature should not raise error.';
+}
+
+{
+    my $data_set = Algorithm::LibLinear::DataSet->new(
+        data_set => [
+            +{ feature => +{ 1 => 1, 3 => 1 }, label => 1 },
+            +{ feature => +{ 2 => 2 }, label => 1 },
+            +{ feature => +{ 2 => 1 }, label => 1 },
+        ]
+    );
+    my $scaling_parameter = Algorithm::LibLinear::ScalingParameter->new(
+        data_set => $data_set,
+        lower_bound => -1,
+        upper_bound => 1,
+    );
+    my $scaled_data_set = $data_set->scale(parameter => $scaling_parameter);
+    my @scaled_features =
+        map { $_->{feature} } @{ $scaled_data_set->as_arrayref };
+    is_deeply(
+        \@scaled_features,
+        [
+            +{ 1 => 1, 2 => -1, 3 => 1 },
+            +{ 1 => -1, 2 => 1, 3 => -1 },
+            +{ 1 => -1, 3 => -1 },
+        ],
+    );
 }
 
 done_testing;
