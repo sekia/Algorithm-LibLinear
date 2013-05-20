@@ -17,7 +17,7 @@ subtype 'Algorithm::LibLinear::LabeledData'
     => where {
         return if keys %$_ != 2;
         for my $key (qw/feature label/) { return unless exists $_->{$key} }
-        state $label_type = find_type_constraint 'Int';
+        state $label_type = find_type_constraint 'Num';
         state $feature_type =
             find_type_constraint 'Algorithm::LibLinear::Feature';
         $label_type->check($_->{label}) and $feature_type->check($_->{feature});
