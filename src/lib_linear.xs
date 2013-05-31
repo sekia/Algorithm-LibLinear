@@ -216,13 +216,10 @@ CODE:
     double *decision_values;
     Newx(decision_values, num_decision_values, double);
     predict_values(self, feature_vector, decision_values);
-    bool is_probability_model = check_probability_model(self);
     RETVAL = newAV();
     av_extend(RETVAL, num_decision_values - 1);
     for (int i = 0; i < num_decision_values; ++i) {
-        SV *decision_value = is_probability_model ?
-          newSVnv(decision_values[i]) : newSViv((int)decision_values[i]);
-        av_push(RETVAL, decision_value);
+        av_push(RETVAL, newSVnv(decision_values[i]));
     }
     Safefree(decision_values);
     Safefree(feature_vector);
