@@ -1,5 +1,9 @@
 Revision history for Perl extension Algorithm::LinearSVM
 
+0.05    Sun Jun 1 2013
+        - Fix incorrect behaviour of predict_values() due to my misunderstanding.
+        - Relax type checking to not raise error on regression problem.
+
 0.04    Sun May 19 2013
         - Fix incorrect sparse vector scaling.
 
