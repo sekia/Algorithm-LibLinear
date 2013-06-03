@@ -1,7 +1,14 @@
-Revision history for Perl extension Algorithm::LinearSVM
+Revision history for Perl extension Algorithm::LibLinear
 
-0.05    Sun Jun 1 2013
-        - Fix incorrect behaviour of predict_values() due to my misunderstanding.
+0.06    Mon Jun 3 2013
+        - Fix that predict() rounds result value even when the model is trained
+          for regression.
+        - predict_probability() now returns empty array when given model is not
+          for logistic regression-based classification.
+
+0.05    Sat Jun 1 2013
+        - Fix incorrect behaviour of predict_values() due to my
+          misunderstanding.
         - Relax type checking to not raise error on regression problem.
 
 0.04    Sun May 19 2013
