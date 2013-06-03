@@ -104,6 +104,17 @@ hv2feature(
     return feature_vector;
 }
 
+inline bool is_regression_solver(const struct parameter *parameter_) {
+    switch (parameter_->solver_type) {
+    case L2R_L2LOSS_SVR:
+    case L2R_L2LOSS_SVR_DUAL:
+    case L2R_L1LOSS_SVR_DUAL:
+        return true;
+    default:
+        return false;
+    }
+}
+
 }  // namespace
 
 MODULE = Algorithm::LibLinear  PACKAGE = Algorithm::LibLinear::Model::Raw  PREFIX = ll_
@@ -179,7 +190,7 @@ CODE:
     struct feature_node *feature_vector = hv2feature(aTHX_ feature_hash);
     double prediction = predict(self, feature_vector);
     Safefree(feature_vector);
-    RETVAL = check_probability_model(self) ?
+    RETVAL = is_regression_solver(&self->param) ?
       newSVnv(prediction) : newSViv((int)prediction);
 OUTPUT:
     RETVAL
@@ -189,18 +200,20 @@ ll_predict_probability(self, feature_hash)
     struct model *self;
     HV *feature_hash;
 CODE:
-    struct feature_node *feature_vector = hv2feature(aTHX_ feature_hash);
-    double *estimated_probabilities;
-    int num_classes = get_nr_class(self);
-    Newx(estimated_probabilities, num_classes, double);
-    predict_probability(self, feature_vector, estimated_probabilities);
     RETVAL = newAV();
-    av_extend(RETVAL, num_classes - 1);
-    for (int i = 0; i < num_classes; ++i) {
-        av_push(RETVAL, newSVnv(estimated_probabilities[i]));
+    if (check_probability_model(self)) {
+        struct feature_node *feature_vector = hv2feature(aTHX_ feature_hash);
+        double *estimated_probabilities;
+        int num_classes = get_nr_class(self);
+        Newx(estimated_probabilities, num_classes, double);
+        predict_probability(self, feature_vector, estimated_probabilities);
+        av_extend(RETVAL, num_classes - 1);
+        for (int i = 0; i < num_classes; ++i) {
+            av_push(RETVAL, newSVnv(estimated_probabilities[i]));
+        }
+        Safefree(feature_vector);
+        Safefree(estimated_probabilities);
     }
-    Safefree(feature_vector);
-    Safefree(estimated_probabilities);
 OUTPUT:
     RETVAL
 
@@ -212,7 +225,8 @@ CODE:
     struct feature_node *feature_vector = hv2feature(aTHX_ feature_hash);
     int num_classes = get_nr_class(self);
     int num_decision_values =
-      num_classes == 2 && self->param.solver_type != MCSVM_CS ? 1 : num_classes;
+        (num_classes == 2 && self->param.solver_type != MCSVM_CS) ?
+        1 : num_classes;
     double *decision_values;
     Newx(decision_values, num_decision_values, double);
     predict_values(self, feature_vector, decision_values);
@@ -315,10 +329,7 @@ bool
 ll_is_regression_solver(self)
     struct parameter *self;
 CODE:
-    RETVAL =
-      self->solver_type == L2R_L2LOSS_SVR
-      || self->solver_type == L2R_L1LOSS_SVR_DUAL
-      || self->solver_type == L2R_L2LOSS_SVR_DUAL;
+    RETVAL = is_regression_solver(self);
 OUTPUT:
     RETVAL
 
