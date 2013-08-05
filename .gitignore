@@ -12,7 +12,6 @@ Makefile
 Makefile.old
 MANIFEST
 MANIFEST.bak
-META.yml
 MYMETA.yml
 nytprof.out
 pm_to_blib
