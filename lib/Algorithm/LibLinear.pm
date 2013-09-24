@@ -142,7 +142,7 @@ __END__
 
 =head1 NAME
 
-Algorithm::LibLinear - A Perl binding for LIBLINEAR.
+Algorithm::LibLinear - A Perl binding for LIBLINEAR, a library for classification/regression using linear SVM and logistic regression.
 
 =head1 SYNOPSIS
 
@@ -176,7 +176,7 @@ Algorithm::LibLinear - A Perl binding for LIBLINEAR.
 
 =head1 DESCRIPTION
 
-Algorithm::LibLinear is an XS module that provides features of LIBLINEAR, a fast C library for classification and regression.
+Algorithm::LibLinear is an XS module that provides features of LIBLINEAR (http://www.csie.ntu.edu.tw/~cjlin/liblinear/), a fast C library for classification and regression.
 
 =head1 METHODS
 
