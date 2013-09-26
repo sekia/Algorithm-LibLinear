@@ -2,6 +2,7 @@ package Algorithm::LibLinear::DataSet;
 
 use 5.014;
 use Algorithm::LibLinear;  # For Algortihm::LibLinear::Problem
+use Algorithm::LibLinear::FeatureScaling;
 use Algorithm::LibLinear::Types;
 use Carp qw//;
 use List::MoreUtils qw/none/;
@@ -98,31 +99,12 @@ sub scale {
         my $self,
         my $parameter => 'Algorithm::LibLinear::ScalingParameter';
 
-    my ($lower_bound, $upper_bound) =
-        ($parameter->lower_bound, $parameter->upper_bound);
-    my $min_max_values = $parameter->min_max_values;
-    my @scaled_data_set = map {
-        my $feature = $_->{feature};
-        my $label = $_->{label};
-        my %scaled_feature;
-        for my $index (1 .. @$min_max_values) {
-            my $unscaled = $feature->{$index} // 0;
-            my ($min, $max) = @{ $min_max_values->[$index - 1] // [0, 0] };
-            next if $min == $max;
-            my $scaled;
-            if ($unscaled == $min) {
-                $scaled = $lower_bound;
-            } elsif ($unscaled == $max) {
-                $scaled = $upper_bound;
-            } else {
-                my $ratio = ($unscaled - $min) / ($max - $min);
-                $scaled = $lower_bound + ($upper_bound - $lower_bound) * $ratio;
-            }
-            $scaled_feature{$index} = $scaled if $scaled != 0;
-        }
-        +{ feature => \%scaled_feature, label => $label, };
-    } @{ $self->as_arrayref };
-    return __PACKAGE__->new(data_set => \@scaled_data_set);
+    my $scale = Algorithm::LibLinear::FeatureScaling->new(
+        lower_bound => $parameter->lower_bound,
+        min_max_values => $parameter->min_max_values,
+        upper_bound => $parameter->upper_bound,
+    );
+    $scale->scale(data_set => $self);
 }
 
 sub size { 0 + @{ $_[0]->as_arrayref } }
