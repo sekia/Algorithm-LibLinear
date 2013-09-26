@@ -2,6 +2,7 @@ package Algorithm::LibLinear::ScalingParameter;
 
 use 5.014;
 use Carp qw//;
+use Algorithm::LibLinear;  # For $SUPRESS_DEPRECATED_WARNING.
 use List::MoreUtils qw/none minmax/;
 use List::Util qw/max/;
 use Smart::Args;
@@ -19,6 +20,14 @@ sub new {
             optional => 1,
         },
         my $upper_bound => +{ isa => 'Num', default => 1.0, };
+
+    unless ($Algorithm::LibLinear::SUPRESS_DEPRECATED_WARNING) {
+        Carp::carp(
+            'Algorithm::LibLinear::ScalingParameter is deprecated.',
+            ' This class will be removed from near future release.',
+            ' Please use Algorithm::LibLinear::FeatureScaling instead.',
+        );
+    }
 
     unless ($data_set or $min_max_values) {
         Carp::croak('Neither "data_set" nor "min_max_values" is specified.');

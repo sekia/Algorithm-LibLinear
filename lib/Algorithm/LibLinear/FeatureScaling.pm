@@ -1,6 +1,7 @@
 package Algorithm::LibLinear::FeatureScaling;
 
 use 5.014;
+use Algorithm::LibLinear;  # For $SUPRESS_DEPRECATED_WARNING.
 use Algorithm::LibLinear::ScalingParameter;
 use Algorithm::LibLinear::Types;
 use Carp qw//;
@@ -25,6 +26,7 @@ sub new {
         Carp::croak('Neither "data_set" nor "min_max_values" is specified.');
     }
 
+    local $Algorithm::LibLinear::SUPRESS_DEPRECATED_WARNING = 1;
     my $parameter = Algorithm::LibLinear::ScalingParameter->new(
         +($data_set ?
               (data_set => $data_set) : (min_max_values => $min_max_values)),
@@ -58,6 +60,8 @@ sub load {
         open $fh, '<', +($filename // \$string) or Carp::croak($!);
         $fh;
     };
+    local $Algorithm::LibLinear::ScalingParameter::SUPRESS_DEPRECATED_WARNING =
+        1;
     my $parameter =
         Algorithm::LibLinear::ScalingParameter->load(fh => $source);
     $class->do_new(parameter => $parameter);

@@ -3,6 +3,8 @@ use Algorithm::LibLinear::ScalingParameter;
 use Test::Exception::LessClever;
 use Test::More;
 
+local $Algorithm::LibLinear::SUPRESS_DEPRECATED_WARNING = 1;
+
 my $data_set = Algorithm::LibLinear::DataSet->load(fh => \*DATA);
 my $parameter = new_ok 'Algorithm::LibLinear::ScalingParameter' => [
     data_set => $data_set

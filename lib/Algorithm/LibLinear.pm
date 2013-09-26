@@ -7,7 +7,9 @@ use Algorithm::LibLinear::Types;
 use Smart::Args;
 use XSLoader;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
+
+our $SUPRESS_DEPRECATED_WARNING = 0;
 
 XSLoader::load(__PACKAGE__, $VERSION);
 

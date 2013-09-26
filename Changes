@@ -1,5 +1,11 @@
 Revision history for Perl extension Algorithm::LibLinear
 
+0.07    Thu Oct 1 2013
+        - Introduce Algorithm::LibLinear::FeatureScaling class that replaces
+          Algorithm::LibLinear::ScalingParameter. The ScalingParameter class
+          and Algorithm::LibLinear::DataSet->scale() method are now deprecated
+          and will be removed from the near future release.
+
 0.06    Mon Jun 3 2013
         - Fix that predict() rounds result value even when the model is trained
           for regression.

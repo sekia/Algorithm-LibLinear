@@ -99,6 +99,14 @@ sub scale {
         my $self,
         my $parameter => 'Algorithm::LibLinear::ScalingParameter';
 
+    unless ($Algorithm::LibLinear::SUPRESS_DEPRECATED_WARNING) {
+        Carp::carp(
+            'Algorithm::LibLinear::DataSet->scale() is deprecated.',
+            ' This method will be removed from near future release.',
+            ' Please use Algorithm::LibLinear::FeatureScaling->scale() instead.',
+        );
+    }
+
     my $scale = Algorithm::LibLinear::FeatureScaling->new(
         lower_bound => $parameter->lower_bound,
         min_max_values => $parameter->min_max_values,
