@@ -23,5 +23,7 @@ xshelper\.h
 ^\.shipit$
 ^\.git/
 ^\.gitignore$
-\.sw[po]$
 ^\.proverc$
+\.sw[po]$
+^\.travis.yml$
+
