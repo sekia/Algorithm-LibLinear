@@ -1,3 +1,4 @@
+before_install: cpanm --notest Module::Install Module::Install::AuthorTests Module::Install::Repository Module::Install::XSUtil
 language: perl
 perl:
   - "5.16"
