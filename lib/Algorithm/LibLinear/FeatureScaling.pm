@@ -1,11 +1,10 @@
 package Algorithm::LibLinear::FeatureScaling;
 
 use 5.014;
-use Algorithm::LibLinear;  # For $SUPRESS_DEPRECATED_WARNING.
-use Algorithm::LibLinear::ScalingParameter;
 use Algorithm::LibLinear::Types;
 use Carp qw//;
-use List::MoreUtils qw/none/;
+use List::MoreUtils qw/minmax none/;
+use List::Util qw/max/;
 use Smart::Args;
 
 sub new {
@@ -26,22 +25,15 @@ sub new {
         Carp::croak('Neither "data_set" nor "min_max_values" is specified.');
     }
 
-    local $Algorithm::LibLinear::SUPRESS_DEPRECATED_WARNING = 1;
-    my $parameter = Algorithm::LibLinear::ScalingParameter->new(
-        +($data_set ?
-              (data_set => $data_set) : (min_max_values => $min_max_values)),
+    my $self = bless +{
         lower_bound => $lower_bound,
         upper_bound => $upper_bound,
-    );
-    $class->do_new(parameter => $parameter);
-}
+    } => $class;
 
-sub do_new {
-    args
-        my $class => 'ClassName',
-        my $parameter => 'Algorithm::LibLinear::ScalingParameter';
+    $self->{min_max_values} = $min_max_values
+        // $self->compute_min_max_values(data_set => $data_set);
 
-    bless +{ parameter => $parameter } => $class;
+    return $self;
 }
 
 sub load {
@@ -54,39 +46,75 @@ sub load {
     if (none { defined } ($filename, $fh, $string)) {
         Carp::croak('No source specified.');
     }
-
     my $source = $fh;
     $source //= do {
         open $fh, '<', +($filename // \$string) or Carp::croak($!);
         $fh;
     };
-    local $Algorithm::LibLinear::ScalingParameter::SUPRESS_DEPRECATED_WARNING =
-        1;
-    my $parameter =
-        Algorithm::LibLinear::ScalingParameter->load(fh => $source);
-    $class->do_new(parameter => $parameter);
+
+    chomp(my $header = <$source>);
+    Carp::croak('At present, y-scaling is not supported.') if $header eq 'y';
+    Carp::croak('Invalid format.') if $header ne 'x';
+
+    chomp(my $bounds = <$source>);
+    my ($lower_bound, $upper_bound) = split /\s+/, $bounds;
+
+    my @min_max_values;
+    while (defined(my $min_max_values = <$source>)) {
+        chomp $min_max_values;
+        my (undef, $min, $max) = split /\s+/, $min_max_values;
+        push @min_max_values, [ $min, $max ];
+    }
+
+    $class->new(
+        lower_bound => $lower_bound,
+        min_max_values => \@min_max_values,
+        upper_bound => $upper_bound,
+    );
 }
 
-sub as_string { $_[0]->parameter->as_string }
+sub as_string {
+    args
+        my $self;
+    my $acc =
+        sprintf "x\n%.16g %.16g\n", $self->lower_bound, $self->upper_bound;
+    my $index = 0;
+    for my $min_max_value (@{ $self->min_max_values }) {
+        $acc .= sprintf "\%d %.16g %.16g\n", ++$index, @$min_max_value;
+    }
+    return $acc;
+}
 
-sub lower_bound { $_[0]->parameter->lower_bound }
+sub compute_min_max_values {
+    args
+        my $self,
+        my $data_set => 'Algorithm::LibLinear::DataSet';
 
-sub min_max_values { $_[0]->parameter->min_max_values }
+    my @feature_vectors = map { $_->{feature} } @{ $data_set->as_arrayref };
+    my $last_index = max map { keys %$_ } @feature_vectors;
+    my @min_max_values;
+    for my $i (1 .. $last_index) {
+        my ($min, $max) = minmax map { $_->{$i} // 0 } @feature_vectors;
+        push @min_max_values, [ $min, $max ];
+    }
+    return \@min_max_values;
+}
 
-sub parameter { $_[0]->{parameter} }
+sub lower_bound { $_[0]->{lower_bound} }
+
+sub min_max_values { $_[0]->{min_max_values} }
 
 sub save {
     args
         my $self,
-        my $filename => +{ isa => 'Str', optional => 1, },
-        my $fh => +{ isa => 'FileHandle', optional => 1, };
+        my $fh => +{ isa => 'FileHandle', optional => 1, },
+        my $filename => +{ isa => 'Str', optional => 1, };
 
     unless ($filename or $fh) {
         Carp::croak('Neither "filename" nor "fh" is given.');
     }
-
     open $fh, '>', $filename or Carp::croak($!) unless $fh;
-    $self->parameter->save($filename ? (filename => $filename) : (fh => $fh));
+    print $fh $self->as_string;
 }
 
 sub scale {
@@ -117,10 +145,8 @@ sub scale_feature {
         my $self,
         my $feature => 'Algorithm::LibLinear::Feature';
 
-    my $parameter = $self->parameter;
-    my ($lower_bound, $upper_bound) =
-        ($parameter->lower_bound, $parameter->upper_bound);
-    my $min_max_values = $parameter->min_max_values;
+    my ($lower_bound, $upper_bound) = ($self->lower_bound, $self->upper_bound);
+    my $min_max_values = $self->min_max_values;
     my %scaled_feature;
     for my $index (1 .. @$min_max_values) {
         my $unscaled = $feature->{$index} // 0;
@@ -151,7 +177,7 @@ sub scale_labeled_data {
     };
 }
 
-sub upper_bound { $_[0]->parameter->upper_bound }
+sub upper_bound { $_[0]->{upper_bound} }
 
 1;
 
