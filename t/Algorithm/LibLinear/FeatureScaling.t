@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use Algorithm::LibLinear::DataSet;
 use Algorithm::LibLinear::FeatureScaling;
 use Test::Exception::LessClever;
