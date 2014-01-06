@@ -47,9 +47,9 @@ sub new {
 sub load {
     args
         my $class => 'ClassName',
-        my $filename => +{ isa => 'Str', optional => 1, },
         my $fh => +{ isa => 'FileHandle', optional => 1, },
-        my $string => +{ isa => 'FileHandle', optional => 1, };
+        my $filename => +{ isa => 'Str', optional => 1, },
+        my $string => +{ isa => 'Str', optional => 1, };
 
     if (none { defined } ($filename, $fh, $string)) {
         Carp::croak('No source specified.');
