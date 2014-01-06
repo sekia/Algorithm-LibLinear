@@ -9,8 +9,6 @@ use XSLoader;
 
 our $VERSION = '0.08';
 
-our $SUPRESS_DEPRECATED_WARNING = 0;
-
 XSLoader::load(__PACKAGE__, $VERSION);
 
 my %default_eps = (
