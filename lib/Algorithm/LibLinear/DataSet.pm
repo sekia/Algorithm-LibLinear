@@ -1,8 +1,6 @@
 package Algorithm::LibLinear::DataSet;
 
 use 5.014;
-use Algorithm::LibLinear;  # For Algortihm::LibLinear::Problem
-use Algorithm::LibLinear::FeatureScaling;
 use Algorithm::LibLinear::Types;
 use Carp qw//;
 use List::MoreUtils qw/none/;
@@ -94,27 +92,6 @@ sub parse_input_file {
     return \@data_set;
 }
 
-sub scale {
-    args
-        my $self,
-        my $parameter => 'Algorithm::LibLinear::ScalingParameter';
-
-    unless ($Algorithm::LibLinear::SUPRESS_DEPRECATED_WARNING) {
-        Carp::carp(
-            'Algorithm::LibLinear::DataSet->scale() is deprecated.',
-            ' This method will be removed from near future release.',
-            ' Please use Algorithm::LibLinear::FeatureScaling->scale() instead.',
-        );
-    }
-
-    my $scale = Algorithm::LibLinear::FeatureScaling->new(
-        lower_bound => $parameter->lower_bound,
-        min_max_values => $parameter->min_max_values,
-        upper_bound => $parameter->upper_bound,
-    );
-    $scale->scale(data_set => $self);
-}
-
 sub size { 0 + @{ $_[0]->as_arrayref } }
 
 1;
@@ -128,7 +105,6 @@ Algorithm::LibLinear::DataSet
 =head1 SYNOPSIS
 
   use Algorithm::LibLinear::DataSet;
-  use Algorithm::LibLinear::ScalingParameter;
   
   my $data_set = Algorithm::LibLinear::DataSet->new(data_set => [
     +{ feature => +{ 1 => 0.708333, 2 => 1, 3 => 1, ... }, label => 1, },
@@ -141,7 +117,6 @@ Algorithm::LibLinear::DataSet
   my $data_set = Algorithm::LibLinear::DataSet->load(string => "+1 1:0.70833 ...");
   
   say $data_set->size;
-  my $scaled_data_set = $data_set->scale(parameter => Algorithm::LibLinaer::ScalingParameter->new(...));
   say $data_set->as_string;  # '+1 1:0.70833 2:1 3:1 ...'
   
   __DATA__
@@ -171,12 +146,6 @@ Class method. Loads data set from LIBSVM/LIBLINEAR format file.
 =head2 as_string
 
 Dumps the data set as a LIBSVM/LIBLINEAR format data.
-
-=head2 scale(parameter => $scaling_parameter)
-
-Returns a scaled data set. C<parameter> is an instance of L<Algorithm::LibLinear::ScalingParameter>.
-
-After scaling, each feature value in data set will be within [C<< $scaling_parameter->lower_bound >>, C<< $scaling_parameter->upper_bound >>].
 
 =head2 size
 
