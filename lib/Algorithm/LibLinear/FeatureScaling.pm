@@ -193,9 +193,12 @@ Algorithm::LibLinear::FeatureScaling
   use Algorithm::LibLinear::FeatureScaling;
   
   my $scale = Algorithm::LibLinear::FeatureScaling->new(
-    lower_bound => -10,
     data_set => Algorithm::LibLinear::DataSet->new(...),
+    lower_bound => -10,
     upper_bound => 10,
+  );
+  my $scale = Algorithm::LibLinear::FeatureScaling->load(
+      filename => '/path/to/file',
   );
   
   my $scaled_feature = $scale->scale(feature => +{ 1 => 30, 2 => - 25, ... });
@@ -205,5 +208,69 @@ Algorithm::LibLinear::FeatureScaling
   my $scaled_data_set = $scale->scale(
     data_set => Algorithm::LibLinear::DataSet->new(...),
   );
+  
+  say $scale->as_string;
+  $scale->save(filename => '/path/to/another/file');
+
+=head1 DESCRIPTION
+
+Support vector classification is actually just a calculation of inner product of feature vector and normal vector of a separation hyperplane. If some elements in feature vectors have greater dynamic range than others, they can have stronger influence on the final calculation result.
+
+For example, consider a normal vector to be C<{ 1 1 1 }> and feature vectors to be classified are C<{ -2 10 5 }>, C<{ 5 -50 0 }> and C<{ 10 100 10 }>. Inner products of these normal vector and feature vectors are 13, -45 and 120 respectively. Obviously 2nd elements of them have wider dynamic range than 1st and 3rd ones and dominate calculation result.
+
+To avoid such a problem, scaling elements of vectors to make they have same dynamic range is very important. This module provides such vector scaling functionality. If you are familiar with the LIBSVM distribution, you can see this is a library version of C<svm-scale> command written in Perl.
+
+=head1 METHODS
+
+=head1 new(data_set => $data_set | min_max_values => \@min_max_values [, lower_bound => 0.0] [, upper_bound => 1.0])
+
+Constructor. You can set some named parameters below. At least C<data_set> or C<min_max_values> is required.
+
+=over 4
+
+=item data_set
+
+An instance of L<Algorithm::LibLinear::DataSet>. This is used to compute dynamic ranges of each vector element.
+
+=item min_max_values
+
+Pre-calculated dynamic ranges of each vector element. Its structure is like:
+
+  my @min_max_values = (
+    [ -10, 10 ],  # Dynamic range of 1st elements of vectors.
+    [ 0, 1 ],     # 2nd
+    [ -1, 1 ],    # 3rd
+    ...
+  );
+
+=item lower_bound
+
+=item upper_bound
+
+The lower/upper limits of dynamic range for each element. Default values are 0.0 and 1.0 respectively.
+
+=back
+
+=head2 load(filename => $path | fh => \*FH | string => $content)
+
+Class method. Creates new instance from dumped scaling parameter file.
+
+Please note that this method can parse only a subset of C<svm-scale>'s file format at present.
+
+=head2 as_string
+
+Dump the scaling parameter as C<svm-scale>'s format.
+
+=head2 save(filename => $path | fh => \*FH)
+
+Writes result of |as_string| to a file.
+
+=head2 scale(data_set => $data_set | feature => \%feature | labeled_data => \%labeled_data)
+
+Scale the given feature, labeled data or data set.
+
+=head1 SEE ALSO
+
+L<A Practical Guide to Support Vector Classification|http://www.csie.ntu.edu.tw/~cjlin/papers/guide/guide.pdf> - For understanding importance of scaling, see Chapter 2.2, appendix A and B.
 
 =cut
