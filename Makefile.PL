@@ -4,11 +4,6 @@ name 'Algorithm-LibLinear';
 license 'mit';
 all_from 'lib/Algorithm/LibLinear.pm';
 
-configure_requires 'Module::Install';
-configure_requires 'Module::Install::AuthorTests';
-configure_requires 'Module::Install::Repository';
-configure_requires 'Module::Install::XSUtil';
-
 requires 'List::MoreUtils';
 requires 'Smart::Args';
 
