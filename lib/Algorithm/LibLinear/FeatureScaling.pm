@@ -222,7 +222,7 @@ To avoid such a problem, scaling elements of vectors to make they have same dyna
 
 =head1 METHODS
 
-=head1 new(data_set => $data_set | min_max_values => \@min_max_values [, lower_bound => 0.0] [, upper_bound => 1.0])
+=head2 new(data_set => $data_set | min_max_values => \@min_max_values [, lower_bound => 0.0] [, upper_bound => 1.0])
 
 Constructor. You can set some named parameters below. At least C<data_set> or C<min_max_values> is required.
 
@@ -263,7 +263,7 @@ Dump the scaling parameter as C<svm-scale>'s format.
 
 =head2 save(filename => $path | fh => \*FH)
 
-Writes result of |as_string| to a file.
+Writes result of C<as_string> out to a file.
 
 =head2 scale(data_set => $data_set | feature => \%feature | labeled_data => \%labeled_data)
 

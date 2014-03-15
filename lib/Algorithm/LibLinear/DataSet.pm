@@ -139,7 +139,7 @@ C<data_set> is an ArrayRef of HashRef that has 2 keys: C<feature> and C<label>.
 The value of C<feature> is a HashRef which represents a (sparse) feature vector. Its key is an index and corresponding value is a real number. The indices must be >= 1.
 The value of C<label> is an integer that is class label the feature belonging.
 
-=head2 load([fh => \*FH] [, filename => $path] [, string => $string])
+=head2 load(fh => \*FH | filename => $path | string => $string)
 
 Class method. Loads data set from LIBSVM/LIBLINEAR format file.
 

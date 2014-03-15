@@ -176,7 +176,9 @@ Algorithm::LibLinear - A Perl binding for LIBLINEAR, a library for classificatio
 
 =head1 DESCRIPTION
 
-Algorithm::LibLinear is an XS module that provides features of LIBLINEAR (http://www.csie.ntu.edu.tw/~cjlin/liblinear/), a fast C library for classification and regression.
+Algorithm::LibLinear is an XS module that provides features of LIBLINEAR, a fast C library for classification and regression.
+
+Current version is based on LIBLINEAR 1.94, released on Nov 12 2013.
 
 =head1 METHODS
 
@@ -274,6 +276,12 @@ C<data_set> is same as the C<cross_validation>'s.
 Koichi SATOH E<lt>sato@seesaa.co.jpE<gt>
 
 =head1 SEE ALSO
+
+L<Algorithm::LibLinear::DataSet>
+
+L<Algorithm::LibLinear::FeatureScaling>
+
+L<Algorithm::LibLinear::Model>
 
 L<LIBLINEAR Homepage|http://www.csie.ntu.edu.tw/~cjlin/liblinear/>
 
