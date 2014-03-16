@@ -26,4 +26,3 @@ xshelper\.h
 ^\.proverc$
 \.sw[po]$
 ^\.travis.yml$
-
