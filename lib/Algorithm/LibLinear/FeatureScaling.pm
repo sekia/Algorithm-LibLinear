@@ -198,7 +198,7 @@ Algorithm::LibLinear::FeatureScaling
     upper_bound => 10,
   );
   my $scale = Algorithm::LibLinear::FeatureScaling->load(
-      filename => '/path/to/file',
+    filename => '/path/to/file',
   );
   
   my $scaled_feature = $scale->scale(feature => +{ 1 => 30, 2 => - 25, ... });
@@ -214,9 +214,9 @@ Algorithm::LibLinear::FeatureScaling
 
 =head1 DESCRIPTION
 
-Support vector classification is actually just a calculation of inner product of feature vector and normal vector of a separation hyperplane. If some elements in feature vectors have greater dynamic range than others, they can have stronger influence on the final calculation result.
+Support vector classification is actually just a calculation of inner product of feature vector and normal vector of separation hyperplane. If some elements in feature vectors have greater dynamic range than others, they can have stronger influence on the final calculation result.
 
-For example, consider a normal vector to be C<{ 1 1 1 }> and feature vectors to be classified are C<{ -2 10 5 }>, C<{ 5 -50 0 }> and C<{ 10 100 10 }>. Inner products of these normal vector and feature vectors are 13, -45 and 120 respectively. Obviously 2nd elements of them have wider dynamic range than 1st and 3rd ones and dominate calculation result.
+For example, consider a normal vector to be C<{ 1 1 1 }> and feature vectors to be classified are C<{ -2 10 5 }>, C<{ 5 -50 0 }> and C<{ 10 100 10 }>. Inner products of these normal vector and feature vectors are 13, -45 and 120 respectively. Obviously 2nd elements of the feature vectors have wider dynamic range than 1st and 3rd ones and dominate calculation result.
 
 To avoid such a problem, scaling elements of vectors to make they have same dynamic range is very important. This module provides such vector scaling functionality. If you are familiar with the LIBSVM distribution, you can see this is a library version of C<svm-scale> command written in Perl.
 
