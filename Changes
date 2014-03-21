@@ -1,5 +1,9 @@
 Revision history for Perl extension Algorithm::LibLinear
 
+0.10    Fri Mar 21 2014
+        - Fix module dependency.
+        - Minor documentation update.
+
 0.09    Tue Jan 7 2014
         - Remove APIs deprecated in version 0.07.
 
