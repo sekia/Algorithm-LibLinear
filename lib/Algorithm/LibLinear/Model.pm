@@ -23,9 +23,28 @@ sub load {
     $class->new(raw_model => $raw_model);
 }
 
+sub bias {
+    args_pos
+        my $self,
+        my $label => 'Int';
+
+    $self->raw_model->bias($label - 1);
+}
+
 sub class_labels { $_[0]->raw_model->class_labels }
 
+sub coefficient {
+    args_pos
+        my $self,
+        my $feature => 'Int',
+        my $label => 'Int';
+
+    $self->raw_model->coefficient($feature, $label - 1);
+}
+
 sub is_probability_model { $_[0]->raw_model->is_probability_model }
+
+sub is_regression_model { $_[0]->raw_model->is_regression_model }
 
 sub num_classes { $_[0]->raw_model->num_classes }
 
@@ -68,7 +87,7 @@ sub save {
         my $self,
         my $filename => 'Str';
 
-    $_[0]->raw_model->save($filename);
+    $self->raw_model->save($filename);
 }
 
 1;
@@ -88,9 +107,21 @@ Algorithm::LibLinear::Model
   my $classifier = Algorithm::LibLinear::Model->load(filename => 'trained.model');
   
   my @labels = $classifier->class_labels;
-  $classifier->is_probability_model;
+  if ($classifier->is_probability_model) { ... }
+  if ($classifier->is_regression_model) { ... }
   say $classifier->num_classes;  # == @labels
   say $classifier->num_features;  # == $data_set->size
+  
+  for my $label (1 .. $classifier->num_classes) {
+      print 'Coeffs: ';
+      print join(' ', map {
+          $classifier->coefficient($_, $label);
+      } 1 .. $classifier->num_features);
+      print "\t";
+      print 'Bias: ', $classifier->bias($label);
+      print "\n";
+  }
+  
   my $class_label = $classifier->predict(feature => +{ 1 => 1, 2 => 1, ... });
   my @probabilities = $classifier->predict_probability(feature => +{ 1 => 1, 2 => 1, ... });
   my @values = $classifier->predict_values(feature => +{ 1 => 1, 2 => 1, ... });
@@ -116,13 +147,31 @@ Note that the constructor of this class is B<not> a part of public API. You can 
 
 Class method. Load a LIBLINEAR's model file and returns an instance of this class.
 
+=head2 bias($index)
+
+Returns value of the bias term corresponding to the C<$index>-th class.
+
+Recall that a trained model can be reprented as a function f(x) = W^t x + b, where W is a F x C matrix, b is a C-sized vector and C and F are the numbers of classes and features, respectively. This method returns b(C<$index>) in this notation.
+
+Note that <$index> is 1-based, unlike LIBLINEAR's C<get_decfun_bias()> function.
+
 =head2 class_labels
 
 Returns an ArrayRef of class labels, each of them could be returned by C<predict> and C<predict_values>.
 
+=head2 coefficient($feature_index, $label_index)
+
+Returns value of the coefficient of classifier matrix. i.e., W(C<$feature_index>, C<$label_index>) (see C<bias> method description above.)
+
+Be careful that both indices are 1-based just same as C<bias>.
+
 =head2 is_probability_model
 
-Returns true if the model is trained as a classifier based on logistic regression, false otherwise.
+Returns true if the model is trained for logistic regression, false otherwise.
+
+=head2 is_regression_model
+
+Returns true if the model is trained for support vector regression (SVR), false otherwise.
 
 =head2 num_classes
 
