@@ -47,6 +47,7 @@ my %solvers = (
 sub new {
     args
         my $class => 'ClassName',
+        my $bias => +{ isa => 'Num', default => -1.0, },
         my $cost => +{ isa => 'Num', default => 1, },
         my $epsilon => +{ isa => 'Num', optional => 1, },
         my $loss_sensitivity => +{ isa => 'Num', default => 0.1, },
@@ -73,8 +74,13 @@ sub new {
         \@weights,
         $loss_sensitivity,
     );
-    bless +{ training_parameter => $training_parameter } => $class;
+    bless +{
+      bias => $bias,
+      training_parameter => $training_parameter,
+    } => $class;
 }
+
+sub bias { $_[0]->{bias} }
 
 sub cost { $_[0]->training_parameter->cost }
 
@@ -85,7 +91,7 @@ sub cross_validation {
         my $num_folds => 'Int';
 
     my $targets = $self->training_parameter->cross_validation(
-        $data_set->as_problem,
+        $data_set->as_problem(bias => $self->bias),
         $num_folds,
     );
     my @labels = map { $_->{label} } @{ $data_set->as_arrayref };
@@ -120,7 +126,7 @@ sub train {
         my $data_set => 'Algorithm::LibLinear::DataSet';
 
     my $raw_model = Algorithm::LibLinear::Model::Raw->train(
-        $data_set->as_problem,
+        $data_set->as_problem(bias => $self->bias),
         $self->training_parameter,
     );
     Algorithm::LibLinear::Model->new(raw_model => $raw_model);
@@ -182,15 +188,21 @@ Current version is based on LIBLINEAR 1.95, released on Oct 27, 2014.
 
 =head1 METHODS
 
-=head2 new([cost => 1] [, epsilon => 0.1] [, loss_sensitivity => 0.1] [, solver => 'L2R_L2LOSS_SVC_DUAL'] [, weights => []])
+=head2 new([bias => -1.0] [, cost => 1] [, epsilon => 0.1] [, loss_sensitivity => 0.1] [, solver => 'L2R_L2LOSS_SVC_DUAL'] [, weights => []])
 
 Constructor. You can set several named parameters:
 
 =over 4
 
+=item bias
+
+Bias term to be added to prediction result (i.e., C<-B> option for LIBLINEAR's C<train> command.).
+
+This parameter makes sense only when its value is positive.
+
 =item cost
 
-Penalty cost for misclassification (i.e., C<-c> option for LIBLINEAR's C<train> command.)
+Penalty cost for misclassification (C<-c>.)
 
 =item epsilon
 

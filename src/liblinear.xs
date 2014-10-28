@@ -420,7 +420,7 @@ MODULE = Algorithm::LibLinear  PACKAGE = Algorithm::LibLinear::Problem  PREFIX =
 PROTOTYPES: DISABLE
 
 struct problem *
-ll_new(klass, labels, features, bias = -1)
+ll_new(klass, labels, features, bias)
     const char *klass;
     AV *labels;
     AV *features;

@@ -45,16 +45,14 @@ sub as_arrayref { $_[0]->{data_set} }
 sub as_problem {
     args
         my $self,
-        my $bias => +{ isa => 'Num', optional => 1, };
+        my $bias => +{ isa => 'Num', default => -1.0, };
 
     my (@features, @labels);
     for my $data (@{ $self->as_arrayref }) {
         push @features, $data->{feature};
         push @labels, $data->{label};
     }
-    Algorithm::LibLinear::Problem->new(
-        \@labels, \@features, defined $bias ? ($bias) : (),
-    );
+    Algorithm::LibLinear::Problem->new(\@labels, \@features, $bias);
 }
 
 sub as_string {
