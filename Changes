@@ -1,5 +1,10 @@
 Revision history for Perl extension Algorithm::LibLinear
 
+0.11    Tue Oct 28 2014
+        - Bundle LIBLINEAR 1.95.
+        - Algorithm::LibLinear: Add "bias" optional costructor parameter.
+        - Algorithm::LibLinaer::Model: Add bias() and coefficient() accessors.
+
 0.10    Fri Mar 21 2014
         - Fix module dependency.
         - Minor documentation update.
@@ -37,4 +42,4 @@ Revision history for Perl extension Algorithm::LibLinear
         - Release for CPAN.
 
 0.01    Tue Feb 26 2013
-        - original version
+        - Original version
