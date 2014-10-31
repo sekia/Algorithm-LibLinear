@@ -21,5 +21,4 @@ test_requires 'Test::Exception::LessClever';
 test_requires 'Test::LeakTrace';
 test_requires 'Test::More';
 auto_set_repository;
-auto_include;
 WriteAll;
