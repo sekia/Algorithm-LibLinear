@@ -1,5 +1,9 @@
 Revision history for Perl extension Algorithm::LibLinear
 
+0.12    Sat Nov 1 2014
+        - Fix test failures when using Test::Simple version 1.301001_062+.
+          Thanks Chad Granum and Graham Knop.
+
 0.11    Tue Oct 28 2014
         - Bundle LIBLINEAR 1.95.
         - Algorithm::LibLinear: Add "bias" optional costructor parameter.
