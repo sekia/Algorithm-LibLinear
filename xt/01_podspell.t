@@ -10,8 +10,10 @@ sato@seesaa.co.jp
 Algorithm::LibLinear
 API
 ArrayRefs
+Crammer
 fh
 filename
+hyperplane
 indices
 L1
 L2

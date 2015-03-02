@@ -151,7 +151,7 @@ Class method. Load a LIBLINEAR's model file and returns an instance of this clas
 
 Returns value of the bias term corresponding to the C<$index>-th class.
 
-Recall that a trained model can be reprented as a function f(x) = W^t x + b, where W is a F x C matrix, b is a C-sized vector and C and F are the numbers of classes and features, respectively. This method returns b(C<$index>) in this notation.
+Recall that a trained model can be represented as a function f(x) = W^t x + b, where W is a F x C matrix, b is a C-sized vector and C and F are the numbers of classes and features, respectively. This method returns b(C<$index>) in this notation.
 
 Note that <$index> is 1-based, unlike LIBLINEAR's C<get_decfun_bias()> function.
 
