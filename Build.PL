@@ -15,6 +15,7 @@ my $builder = Module::Build::XSUtil->new(
   needs_compiler_cpp => 1,
   recursive_test_files => 1,
   requires => +{
+    'perl' => '5.14.0',
     'List::MoreUtils' => 0,
     'Smart::Args' => 0,
   },
