@@ -414,7 +414,6 @@ ll_DESTROY(self)
 CODE:
     free_parameter(aTHX_ self);
     
-
 MODULE = Algorithm::LibLinear  PACKAGE = Algorithm::LibLinear::Problem  PREFIX = ll_
 
 PROTOTYPES: DISABLE
@@ -425,7 +424,7 @@ ll_new(klass, labels, features, bias)
     AV *labels;
     AV *features;
     double bias;
-  CODE:
+CODE:
     int num_training_data = av_len(labels) + 1;
     if (num_training_data == 0) {
         Perl_croak(aTHX_ "No training set is given.");
@@ -465,35 +464,35 @@ ll_new(klass, labels, features, bias)
         free_problem(aTHX_ RETVAL);
         XCPT_RETHROW;
     }
-  OUTPUT:
+OUTPUT:
     RETVAL
 
 double
 ll_bias(self)
     struct problem *self;
-  CODE:
+CODE:
     RETVAL = self->bias;
-  OUTPUT:
+OUTPUT:
     RETVAL
 
 int
 ll_data_set_size(self)
     struct problem *self;
-  CODE:
+CODE:
     RETVAL = self->l;
-  OUTPUT:
+OUTPUT:
     RETVAL
 
 int
 ll_num_features(self)
     struct problem *self;
-  CODE:
+CODE:
     RETVAL = self->n;
-  OUTPUT:
+OUTPUT:
     RETVAL
 
 void
 ll_DESTROY(self)
     struct problem *self;
-  CODE:
+CODE:
     free_problem(aTHX_ self);
