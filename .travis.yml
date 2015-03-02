@@ -2,5 +2,7 @@ before_install:
   - cpanm --notest Module::Build Module::Build::XSUtil
 language: perl
 perl:
+  - "5.20"
+  - "5.18"
   - "5.16"
   - "5.14"
