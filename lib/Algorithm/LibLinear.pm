@@ -4,6 +4,7 @@ use 5.014;
 use Algorithm::LibLinear::DataSet;
 use Algorithm::LibLinear::Model;
 use Algorithm::LibLinear::Types;
+use List::Util qw/sum/;
 use Smart::Args;
 use XSLoader;
 
@@ -96,18 +97,15 @@ sub cross_validation {
     );
     my @labels = map { $_->{label} } @{ $data_set->as_arrayref };
     if ($self->is_regression_solver) {
-        my $total_square_error = 0;
-        for my $i (0 .. $data_set->size - 1) {
-            $total_square_error += ($targets->[$i] - $labels[$i]) ** 2;
-        }
+        my $total_square_error = sum map {
+            ($targets->[$_] - $labels[$_]) ** 2;
+        } (0 .. $data_set->size - 1);
         # Returns mean squared error.
         # TODO: Squared correlation coefficient (see train.c in LIBLINEAR.)
         return $total_square_error / $data_set->size;
     } else {
-        my $num_corrects;
-        for my $i (0 .. $data_set->size - 1) {
-            ++$num_corrects if $targets->[$i] == $labels[$i];
-        }
+        my $num_corrects =
+            grep { $targets->[$_] == $labels[$_] } (0 .. $data_set->size - 1);
         return $num_corrects / $data_set->size;
     }
 }
