@@ -112,6 +112,24 @@ sub cross_validation {
 
 sub epsilon { $_[0]->training_parameter->epsilon }
 
+sub find_cost_parameter {
+    args
+        my $self,
+        my $data_set => 'Algorithm::LibLinear::DataSet',
+        my $initial => +{ isa => 'Num', default => -1.0, },
+        my $max => 'Num',
+        my $num_folds => 'Int',
+        my $update => +{ isa => 'Bool', default => 0, };
+
+    $self->training_parameter->find_cost_parameter(
+        $data_set->as_problem(bias => $self->bias),
+        $num_folds,
+        $initial,
+        $max,
+        $update,
+    );
+}
+
 sub is_regression_solver { $_[0]->training_parameter->is_regression_solver }
 
 sub loss_sensitivity { $_[0]->training_parameter->loss_sensitivity }
@@ -163,6 +181,8 @@ Algorithm::LibLinear - A Perl binding for LIBLINEAR, a library for classificatio
   );
   # Loads a training data set from DATA filehandle.
   my $data_set = Algorithm::LibLinear::DataSet->load(fh => \*DATA);
+  # Updates training parameter.
+  $learner->find_cost_parameter(data_set => $data_set, max => 1000, num_folds => 5, update => 1);
   # Executes cross validation.
   my $accuracy = $learner->cross_validation(data_set => $data_set, num_folds => 5);
   # Executes training.
@@ -275,6 +295,13 @@ This option is useful when the number of training samples of each class is not b
 Evaluates training parameter using N-fold cross validation method.
 Given data set will be split into N parts. N-1 of them will be used as a training set and the rest 1 part will be used as a test set.
 The evaluation iterates N times using each different part as a test set. Then average accuracy is returned as result.
+
+=head2 find_cost_parameter(data_set => $data_set, max => $max_cost, num_folst => $num_folds [, initial => -1.0] [, update => 0])
+
+Find the best cost parameter in terms of cross validation result, between C<initial> and C<max>. If C<initial> parameter is omitted an appropriate value is automatically estimated.
+When true value is specified as C<update> parameter, the instance is updated to use the found cost. This behaviour is disabled by default.
+
+Return value is an ArrayRef containing 2 values: the found cost and its cross validation score (i.e., accuracy.)
 
 =head2 train(data_set => $data_set)
 

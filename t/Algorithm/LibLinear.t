@@ -23,6 +23,15 @@ my $input_data_set = do { local $/; <DATA> };
     my $data_set =
         Algorithm::LibLinear::DataSet->load(string => $input_data_set);
     isa_ok $data_set, 'Algorithm::LibLinear::DataSet';
+
+    my $found_cost = $learner->find_cost_parameter(
+        data_set => $data_set,
+        max => 10,
+        num_folds => 5,
+        update => 1,
+    );
+    is $learner->cost, $found_cost->[0];
+
     my $classifier = $learner->train(data_set => $data_set);
     isa_ok $classifier, 'Algorithm::LibLinear::Model';
 
