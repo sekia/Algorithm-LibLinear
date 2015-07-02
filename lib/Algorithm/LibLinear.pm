@@ -328,7 +328,7 @@ L<Algorithm::SVM> - A Perl binding to LIBSVM.
 
 =head2 Algorithm::LibLinear
 
-Copyright (c) 2013-2014 Koichi SATOH. All rights reserved.
+Copyright (c) 2013-2015 Koichi SATOH. All rights reserved.
 
 The MIT License (MIT)
 
@@ -340,7 +340,7 @@ THE SOFTWARE IS PROVIDED ``AS IS'', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMP
 
 =head2 LIBLINEAR
 
-Copyright (c) 2007-2014 The LIBLINEAR Project.
+Copyright (c) 2007-2015 The LIBLINEAR Project.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
