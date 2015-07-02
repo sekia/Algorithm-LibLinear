@@ -1,8 +1,11 @@
+^Algorithm-LibLinear-
 ^MANIFEST\.
 ^MYMETA\.
+Makefile
 ~$
 \#$
 ^#
+^\.build
 \.gz$
 ^\.git/
 ^\.gitignore$
