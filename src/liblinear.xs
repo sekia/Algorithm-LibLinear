@@ -352,6 +352,28 @@ CODE:
 OUTPUT:
     RETVAL
 
+AV *
+ll_find_cost_parameter(self, problem_, num_folds, initial_cost, max_cost, update)
+    struct parameter *self;
+    struct problem *problem_;
+    int num_folds;
+    double initial_cost;
+    double max_cost;
+    bool update;
+CODE:
+    double cost, accuracy;
+    find_parameter_C(
+        problem_, self, num_folds, initial_cost, max_cost, &cost, &accuracy);
+    // LIBLINEAR 2.0 resets default printer function during call of
+    // find_parameter_C(). So disable it again.
+    set_print_string_function(dummy_puts);
+    if (update) { self->C = cost; }
+    RETVAL = newAV();
+    av_push(RETVAL, newSVnv(cost));
+    av_push(RETVAL, newSVnv(accuracy));
+OUTPUT:
+    RETVAL
+
 bool
 ll_is_regression_solver(self)
     struct parameter *self;
