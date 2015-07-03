@@ -20,6 +20,7 @@ alloc_parameter(pTHX_ int num_weights) {
         Newx(parameter_->weight_label, num_weights, int);
         Newx(parameter_->weight, num_weights, double);
     }
+    parameter_->init_sol = NULL;
     parameter_->nr_weight = num_weights;
     return parameter_;
 }
