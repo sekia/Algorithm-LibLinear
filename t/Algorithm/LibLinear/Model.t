@@ -7,6 +7,8 @@ use Test::More;
 
 use_ok 'Algorithm::LibLinear::Model';
 
+my $tolerance = 10e-15;
+
 my $model_file = File::Spec->catfile(dirname(__FILE__), 'classifier.model');
 my $classifier = Algorithm::LibLinear::Model->load(filename => $model_file);
 
@@ -25,9 +27,11 @@ cmp_deeply(
 );
 
 my @biases = map { $classifier->bias($_) } 1 .. $classifier->num_classes;
-is_deeply(
+cmp_deeply(
   \@biases,
-  [ -0.517607618406239, -0.546185221735258, -3.08979444883496 ],
+  [ map {
+    num($_, $tolerance);
+  } (-0.517607618406239, -0.546185221735258, -3.08979444883496) ],
 );
 
 my @coefficients = map {
@@ -36,13 +40,17 @@ my @coefficients = map {
     $classifier->coefficient($feature_index, $_);
   } 1 .. $classifier->num_classes ];
 } 1 .. $classifier->num_features;
-is_deeply(
+cmp_deeply(
   \@coefficients,
   [
-    [ 0.04103487079450262, -0.008771914659137776, -0.1160503346528812 ],
-    [ 0.2342191077303725, -0.1250698131581897, -0.1190538111847415 ],
-    [ -0.2048151760378588, 0.1373834860433695, 0.5354628806913007 ],
-    [ -0.1991378710551831, -0.1214875508849184, 0.3862178521798377 ],
+    map {
+      [ map { num($_, $tolerance) } @$_ ];
+    } (
+      [ 0.04103487079450262, -0.008771914659137776, -0.1160503346528812 ],
+      [ 0.2342191077303725, -0.1250698131581897, -0.1190538111847415 ],
+      [ -0.2048151760378588, 0.1373834860433695, 0.5354628806913007 ],
+      [ -0.1991378710551831, -0.1214875508849184, 0.3862178521798377 ],
+    ),
   ],
 );
 
