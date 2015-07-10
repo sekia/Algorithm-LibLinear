@@ -8,7 +8,7 @@ use List::Util qw/sum/;
 use Smart::Args;
 use XSLoader;
 
-our $VERSION = '0.14';
+our $VERSION = '0.15';
 
 XSLoader::load(__PACKAGE__, $VERSION);
 
@@ -202,7 +202,7 @@ Algorithm::LibLinear - A Perl binding for LIBLINEAR, a library for classificatio
 
 Algorithm::LibLinear is an XS module that provides features of LIBLINEAR, a fast C library for classification and regression.
 
-Current version is based on LIBLINEAR 2.0, released on Jun 30, 2015.
+Current version is based on LIBLINEAR 2.01, released on Jul 8, 2015.
 
 =head1 METHODS
 
