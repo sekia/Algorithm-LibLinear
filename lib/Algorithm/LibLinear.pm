@@ -296,7 +296,7 @@ Evaluates training parameter using N-fold cross validation method.
 Given data set will be split into N parts. N-1 of them will be used as a training set and the rest 1 part will be used as a test set.
 The evaluation iterates N times using each different part as a test set. Then average accuracy is returned as result.
 
-=head2 find_cost_parameter(data_set => $data_set, max => $max_cost, num_folst => $num_folds [, initial => -1.0] [, update => 0])
+=head2 find_cost_parameter(data_set => $data_set, max => $max_cost, num_folds => $num_folds [, initial => -1.0] [, update => 0])
 
 Find the best cost parameter in terms of cross validation result, between C<initial> and C<max>. If C<initial> parameter is omitted an appropriate value is automatically estimated.
 When true value is specified as C<update> parameter, the instance is updated to use the found cost. This behaviour is disabled by default.
