@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::Exception::LessClever;
+use Test::Exception;
 use Test::Deep;
 use Test::More;
 

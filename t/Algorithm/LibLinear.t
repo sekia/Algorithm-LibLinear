@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use File::Temp;
-use Test::Exception::LessClever;
+use Test::Exception;
 use Test::LeakTrace;
 use Test::More;
 

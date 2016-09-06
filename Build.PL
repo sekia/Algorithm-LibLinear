@@ -22,7 +22,7 @@ my $builder = Module::Build::XSUtil->new(
   test_files => ['t/', +($ENV{RELEASE_TESTING} ? 'xt/' : ())],
   test_requires => +{
     'Test::Deep' => 0,
-    'Test::Exception::LessClever' => 0,
+    'Test::Exception' => 0,
     'Test::LeakTrace' => 0,
     'Test::More' => 0,
   },
