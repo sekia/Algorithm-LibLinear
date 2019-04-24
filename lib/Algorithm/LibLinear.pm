@@ -8,7 +8,7 @@ use List::Util qw/sum/;
 use Smart::Args;
 use XSLoader;
 
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 XSLoader::load(__PACKAGE__, $VERSION);
 
