@@ -74,6 +74,8 @@ sub new {
         \@weight_labels,
         \@weights,
         $loss_sensitivity,
+        0.5,
+        1,
     );
     bless +{
       bias => $bias,
