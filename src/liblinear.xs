@@ -118,7 +118,8 @@ hv2feature(
     return feature_vector;
 }
 
-inline bool is_regression_solver(const struct parameter *parameter_) {
+inline bool
+is_regression_solver(const struct parameter *parameter_) {
     switch (parameter_->solver_type) {
     case L2R_L2LOSS_SVR:
     case L2R_L2LOSS_SVR_DUAL:
@@ -466,7 +467,7 @@ ll_DESTROY(self)
     struct parameter *self;
 CODE:
     free_parameter(aTHX_ self);
-    
+
 MODULE = Algorithm::LibLinear  PACKAGE = Algorithm::LibLinear::Problem  PREFIX = ll_
 
 PROTOTYPES: DISABLE
