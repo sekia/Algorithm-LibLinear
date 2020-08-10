@@ -21,15 +21,13 @@ my %default_eps = (
     L1R_L2LOSS_SVC => 0.01,
     L1R_LR => 0.01,
     L2R_LR_DUAL => 0.1,
-
-    # Solvers for regression problem
     L2R_L2LOSS_SVR => 0.001,
     L2R_L2LOSS_SVR_DUAL => 0.1,
     L2R_L1LOSS_SVR_DUAL => 0.1,
+    ONECLASS_SVM => 0.01,
 );
 
 my %solvers = (
-    # Solvers for classification problem
     L2R_LR => 0,
     L2R_L2LOSS_SVC_DUAL => 1,
     L2R_L2LOSS_SVC => 2,
@@ -38,11 +36,10 @@ my %solvers = (
     L1R_L2LOSS_SVC => 5,
     L1R_LR => 6,
     L2R_LR_DUAL => 7,
-
-    # Solvers for regression problem
     L2R_L2LOSS_SVR => 11,
     L2R_L2LOSS_SVR_DUAL => 12,
     L2R_L1LOSS_SVR_DUAL => 13,
+    ONECLASS_SVM => 21,
 );
 
 sub new {
@@ -52,6 +49,8 @@ sub new {
         my $cost => +{ isa => 'Num', default => 1, },
         my $epsilon => +{ isa => 'Num', optional => 1, },
         my $loss_sensitivity => +{ isa => 'Num', default => 0.1, },
+        my $nu => +{ isa => 'Num', default => 0.5, },
+        my $regularize_bias => +{ isa => 'Bool', default => 1, },
         my $solver => +{
             isa => 'Algorithm::LibLinear::SolverDescriptor',
             default => 'L2R_L2LOSS_SVC_DUAL',
@@ -74,8 +73,8 @@ sub new {
         \@weight_labels,
         \@weights,
         $loss_sensitivity,
-        0.5,
-        1,
+        $nu,
+        $regularize_bias,
     );
     bless +{
       bias => $bias,
@@ -224,11 +223,11 @@ Algorithm::LibLinear - A Perl binding for LIBLINEAR, a library for classificatio
 
 Algorithm::LibLinear is an XS module that provides features of LIBLINEAR, a fast C library for classification and regression.
 
-Current version is based on LIBLINEAR 2.30, released on Mar 21, 2019.
+Current version is based on LIBLINEAR 2.41, released on July 29, 2020.
 
 =head1 METHODS
 
-=head2 new([bias => -1.0] [, cost => 1] [, epsilon => 0.1] [, loss_sensitivity => 0.1] [, solver => 'L2R_L2LOSS_SVC_DUAL'] [, weights => []])
+=head2 new([bias => -1.0] [, cost => 1] [, epsilon => 0.1] [, loss_sensitivity => 0.1] [, nu => 0.5] [, regularize_bias => 1] [, solver => 'L2R_L2LOSS_SVC_DUAL'] [, weights => []])
 
 Constructor. You can set several named parameters:
 
@@ -253,6 +252,14 @@ Default value of this parameter depends on the value of C<solver>.
 =item loss_sensitivity
 
 Epsilon in loss function of SVR (C<-p>.)
+
+=item nu
+
+Nu parameter of one-class SVM (C<-n>.)
+
+=item regularize_bias
+
+Whether to regularize the bias term (C<-R>, negated.)
 
 =item solver
 
@@ -289,6 +296,14 @@ For regression:
 =item 'L2R_L2LOSS_SVR_DUAL' - L2-regularized L2-loss SVR (dual problem)
 
 =item 'L2R_L1LOSS_SVR_DUAL' - L2-regularized L1-loss SVR (dual problem)
+
+=back
+
+For outlier detection:
+
+=over 4
+
+=item 'ONECLASS_SVM' - One-class SVM
 
 =back
 
@@ -358,7 +373,7 @@ L<Algorithm::SVM> - A Perl binding to LIBSVM.
 
 =head2 Algorithm::LibLinear
 
-Copyright (c) 2013-2019 Koichi SATOH. All rights reserved.
+Copyright (c) 2013-2020 Koichi SATOH. All rights reserved.
 
 The MIT License (MIT)
 
@@ -370,7 +385,7 @@ THE SOFTWARE IS PROVIDED ``AS IS'', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMP
 
 =head2 LIBLINEAR
 
-Copyright (c) 2007-2019 The LIBLINEAR Project.
+Copyright (c) 2007-2020 The LIBLINEAR Project.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

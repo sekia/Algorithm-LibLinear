@@ -36,7 +36,7 @@ subtype 'Algorithm::LibLinear::TrainingParameter::ClassWeight'
 enum 'Algorithm::LibLinear::SolverDescriptor' => [
     qw/L2R_LR L2R_L2LOSS_SVC_DUAL L2R_L2LOSS_SVC L2R_L1LOSS_SVC_DUAL MCSVM_CS
        L1R_L2LOSS_SVC L1R_LR L2R_LR_DUAL L2R_L2LOSS_SVR L2R_L2LOSS_SVR_DUAL
-       L2R_L1LOSS_SVR_DUAL/
+       L2R_L1LOSS_SVR_DUAL ONECLASS_SVM/
 ];
 
 no Mouse::Util::TypeConstraints;
