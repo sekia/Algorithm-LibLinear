@@ -5,7 +5,10 @@
 #include "linear.h"
 
 #define NO_XSLOCKS
-#include "xshelper.h"
+#include "EXTERN.h"
+#include "XSUB.h"
+#include "perl.h"
+#include "ppport.h"
 
 namespace {
 

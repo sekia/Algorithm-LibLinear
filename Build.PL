@@ -8,7 +8,7 @@ my $builder = Module::Build::XSUtil->new(
     'Module::Build' => '0.42',
     'Module::Build::XSUtil' => '0.14',
   },
-  generate_xshelper_h => 'xshelper.h',
+  generate_ppport_h => 'ppport.h',
   include_dirs => ['.', 'src/liblinear', 'src/liblinear/blas'],
   license => 'mit',
   module_name => 'Algorithm::LibLinear',
