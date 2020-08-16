@@ -211,7 +211,6 @@ PROTOTYPES: DISABLE
 
 struct model *
 ll_train(klass, problem_, parameter_)
-    const char *klass;
     struct problem *problem_;
     struct parameter *parameter_;
 CODE:
@@ -222,7 +221,6 @@ OUTPUT:
 
 struct model *
 ll_load(klass, filename)
-    const char *klass;
     const char *filename;
 CODE:
     RETVAL = load_model(filename);
@@ -378,7 +376,6 @@ PROTOTYPES: DISABLE
 
 struct parameter *
 ll_new(klass, solver_type, epsilon, cost, weight_labels, weights, loss_sensitivity, nu, regularize_bias)
-    const char *klass;
     int solver_type;
     double epsilon;
     double cost;
@@ -533,7 +530,6 @@ PROTOTYPES: DISABLE
 
 struct problem *
 ll_new(klass, labels, features, bias)
-    const char *klass;
     AV *labels;
     AV *features;
     double bias;
