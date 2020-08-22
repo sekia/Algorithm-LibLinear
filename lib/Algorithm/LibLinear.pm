@@ -355,7 +355,7 @@ C<data_set> is same as the C<cross_validation>'s.
 
 =head1 AUTHOR
 
-Koichi SATOH E<lt>sekia@cpan.orgE<gt>
+Koichi SATO E<lt>sekia@cpan.orgE<gt>
 
 =head1 SEE ALSO
 
@@ -373,7 +373,7 @@ L<Algorithm::SVM> - A Perl binding to LIBSVM.
 
 =head2 Algorithm::LibLinear
 
-Copyright (c) 2013-2020 Koichi SATOH. All rights reserved.
+Copyright (c) 2013-2020 Koichi SATO. All rights reserved.
 
 The MIT License (MIT)
 
