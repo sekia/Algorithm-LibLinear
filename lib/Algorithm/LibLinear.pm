@@ -277,7 +277,7 @@ For classification:
 
 =item 'L2R_L1LOSS_SVC_DUAL' - L2-regularized L1-loss SVC (dual problem)
 
-=item 'MCSVM_CS' - Crammer-Singer multiclass SVM
+=item 'MCSVM_CS' - Crammer-Singer multi-class SVM
 
 =item 'L1R_L2LOSS_SVC' - L1-regularized L2-loss SVC
 
@@ -338,7 +338,7 @@ The evaluation iterates N times using each different part as a test set. Then av
 Deprecated. Use C<find_parameters> instead.
 
 Shorthand alias for C<find_parameters> only works on C<cost> parameter.
-Notice that C<loss_sensitivity> is affected too whne C<update> is set.
+Notice that C<loss_sensitivity> is affected too when C<update> is set.
 
 =head2 find_parameters(data_set => $data_set, num_folds => $num_folds [, initial_cost => -1.0] [, initial_loss_sensitivity => -1.0] [, update => 0])
 
