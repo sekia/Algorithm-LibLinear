@@ -17,7 +17,8 @@ my $builder = Module::Build::XSUtil->new(
   requires => +{
     'perl' => '5.16.0',
     'List::MoreUtils' => 0,
-    'Smart::Args' => 0,
+    'Smart::Args::TypeTiny' => '0.12',
+    'Type::Tiny' => '1.0',
   },
   test_files => ['t/', +($ENV{RELEASE_TESTING} ? 'xt/' : ())],
   test_requires => +{

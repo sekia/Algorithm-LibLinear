@@ -3,14 +3,24 @@ package Algorithm::LibLinear;
 use 5.014;
 use Algorithm::LibLinear::DataSet;
 use Algorithm::LibLinear::Model;
-use Algorithm::LibLinear::Types;
 use List::Util qw/sum/;
-use Smart::Args;
+use Smart::Args::TypeTiny;
+use Types::Standard qw/ArrayRef Bool ClassName Dict Enum InstanceOf Int Num/;
 use XSLoader;
 
 our $VERSION = '0.20';
 
 XSLoader::load(__PACKAGE__, $VERSION);
+
+my $ClassWeight = Dict[ label => Int, weight => Num ];
+
+my $InstanceOfPackage = InstanceOf[__PACKAGE__];
+
+my $SolverDescriptor = Enum[
+    qw/L2R_LR L2R_L2LOSS_SVC_DUAL L2R_L2LOSS_SVC L2R_L1LOSS_SVC_DUAL MCSVM_CS
+       L1R_L2LOSS_SVC L1R_LR L2R_LR_DUAL L2R_L2LOSS_SVR L2R_L2LOSS_SVR_DUAL
+       L2R_L1LOSS_SVR_DUAL ONECLASS_SVM/,
+];
 
 my %default_eps = (
     L2R_LR => 0.01,
@@ -44,21 +54,18 @@ my %solvers = (
 
 sub new {
     args
-        my $class => 'ClassName',
-        my $bias => +{ isa => 'Num', default => -1.0, },
-        my $cost => +{ isa => 'Num', default => 1, },
-        my $epsilon => +{ isa => 'Num', optional => 1, },
-        my $loss_sensitivity => +{ isa => 'Num', default => 0.1, },
-        my $nu => +{ isa => 'Num', default => 0.5, },
-        my $regularize_bias => +{ isa => 'Bool', default => 1, },
+        my $class => ClassName,
+        my $bias => +{ isa => Num, default => -1.0, },
+        my $cost => +{ isa => Num, default => 1, },
+        my $epsilon => +{ isa => Num, optional => 1, },
+        my $loss_sensitivity => +{ isa => Num, default => 0.1, },
+        my $nu => +{ isa => Num, default => 0.5, },
+        my $regularize_bias => +{ isa => Bool, default => 1, },
         my $solver => +{
-            isa => 'Algorithm::LibLinear::SolverDescriptor',
+            isa => $SolverDescriptor,
             default => 'L2R_L2LOSS_SVC_DUAL',
         },
-        my $weights => +{
-            isa => 'ArrayRef[Algorithm::LibLinear::TrainingParameter::ClassWeight]',
-            default => [],
-        };
+        my $weights => +{ isa => ArrayRef[$ClassWeight], default => [], };
 
     $epsilon //= $default_eps{$solver};
     my (@weight_labels, @weights);
@@ -88,9 +95,9 @@ sub cost { $_[0]->training_parameter->cost }
 
 sub cross_validation {
     args
-        my $self,
-        my $data_set => 'Algorithm::LibLinear::DataSet',
-        my $num_folds => 'Int';
+        my $self => $InstanceOfPackage,
+        my $data_set => InstanceOf['Algorithm::LibLinear::DataSet'],
+        my $num_folds => Int;
 
     my $targets = $self->training_parameter->cross_validation(
         $data_set->as_problem(bias => $self->bias),
@@ -115,11 +122,11 @@ sub epsilon { $_[0]->training_parameter->epsilon }
 
 sub find_cost_parameter {
     args
-        my $self,
-        my $data_set => 'Algorithm::LibLinear::DataSet',
-        my $initial => +{ isa => 'Num', default => -1.0 },
-        my $num_folds => 'Int',
-        my $update => +{ isa => 'Bool', default => 0, };
+        my $self => $InstanceOfPackage,
+        my $data_set => InstanceOf['Algorithm::LibLinear::DataSet'],
+        my $initial => +{ isa => Num, default => -1.0 },
+        my $num_folds => Int,
+        my $update => +{ isa => Bool, default => 0, };
 
     my ($cost, undef, $accuracy) = @{
         $self->find_parameters(
@@ -135,12 +142,12 @@ sub find_cost_parameter {
 
 sub find_parameters {
     args
-        my $self,
-        my $data_set => 'Algorithm::LibLinear::DataSet',
-        my $initial_cost => +{ isa => 'Num', default => -1.0, },
-        my $initial_loss_sensitivity => +{ isa => 'Num', default => -1.0, },
-        my $num_folds => 'Int',
-        my $update => +{ isa => 'Bool', default => 0, };
+        my $self => $InstanceOfPackage,
+        my $data_set => InstanceOf['Algorithm::LibLinear::DataSet'],
+        my $initial_cost => +{ isa => Num, default => -1.0, },
+        my $initial_loss_sensitivity => +{ isa => Num, default => -1.0, },
+        my $num_folds => Int,
+        my $update => +{ isa => Bool, default => 0, };
 
     $self->training_parameter->find_parameters(
         $data_set->as_problem(bias => $self->bias),
@@ -159,8 +166,8 @@ sub training_parameter { $_[0]->{training_parameter} }
 
 sub train {
     args
-        my $self,
-        my $data_set => 'Algorithm::LibLinear::DataSet';
+        my $self => $InstanceOfPackage,
+        my $data_set => InstanceOf['Algorithm::LibLinear::DataSet'];
 
     my $raw_model = Algorithm::LibLinear::Model::Raw->train(
         $data_set->as_problem(bias => $self->bias),
@@ -171,7 +178,7 @@ sub train {
 
 sub weights {
     args
-        my $self;
+        my $self => $InstanceOfPackage;
 
     my $labels = $self->training_parameter->weight_labels;
     my $weights = $self->training_parameter->weights;
