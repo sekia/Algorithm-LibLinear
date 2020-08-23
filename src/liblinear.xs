@@ -265,6 +265,14 @@ OUTPUT:
     RETVAL
 
 bool
+ll_is_oneclass_model(self)
+    struct model* self;
+CODE:
+    RETVAL = check_oneclass_model(self);
+OUTPUT:
+    RETVAL
+
+bool
 ll_is_probability_model(self)
     struct model *self;
 CODE:
@@ -351,6 +359,14 @@ CODE:
     }
     Safefree(decision_values);
     Safefree(feature_vector);
+OUTPUT:
+    RETVAL
+
+double
+ll_rho(self)
+    struct model *self;
+CODE:
+    RETVAL = get_decfun_rho(self);
 OUTPUT:
     RETVAL
 

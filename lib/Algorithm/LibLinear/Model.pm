@@ -29,7 +29,11 @@ sub load {
 sub bias {
     args_pos
         my $self => $InstanceOfPackage,
-        my $label => Int;
+        my $label => +{ isa => Int, optional => 1, };
+
+    return $self->raw_model->rho if $self->is_oneclass_model;
+    # Non one-class SVM model requires label index.
+    Carp::croak('Missing mandatory label index.') unless defined $label;
 
     $self->raw_model->bias($label - 1);
 }
@@ -45,6 +49,8 @@ sub coefficient {
     $self->raw_model->coefficient($feature, $label - 1);
 }
 
+sub is_oneclass_model { $_[0]->raw_model->is_oneclass_model }
+
 sub is_probability_model { $_[0]->raw_model->is_probability_model }
 
 sub is_regression_model { $_[0]->raw_model->is_regression_model }
@@ -52,8 +58,6 @@ sub is_regression_model { $_[0]->raw_model->is_regression_model }
 sub num_classes { $_[0]->raw_model->num_classes }
 
 sub num_features { $_[0]->raw_model->num_features }
-
-sub raw_model { $_[0]->{raw_model} }
 
 sub predict {
     args
@@ -85,6 +89,8 @@ sub predict_values {
     $self->raw_model->predict_values($feature);
 }
 
+sub raw_model { $_[0]->{raw_model} }
+
 sub save {
     args
         my $self => $InstanceOfPackage,
@@ -110,6 +116,7 @@ Algorithm::LibLinear::Model
   my $classifier = Algorithm::LibLinear::Model->load(filename => 'trained.model');
   
   my @labels = $classifier->class_labels;
+  if ($classifier->is_oneclass_model) { ... }
   if ($classifier->is_probability_model) { ... }
   if ($classifier->is_regression_model) { ... }
   say $classifier->num_classes;  # == @labels
@@ -150,9 +157,9 @@ Note that the constructor of this class is B<not> a part of public API. You can 
 
 Class method. Load a LIBLINEAR's model file and returns an instance of this class.
 
-=head2 bias($index)
+=head2 bias([$index])
 
-Returns value of the bias term corresponding to the C<$index>-th class.
+Returns value of the bias term corresponding to the C<$index>-th class. In case of one-class SVM (i.e., when C<is_oneclass_model> is true,) the C<$index> is ignored.
 
 Recall that a trained model can be represented as a function f(x) = W^t x + b, where W is a F x C matrix, b is a C-sized vector and C and F are the numbers of classes and features, respectively. This method returns b(C<$index>) in this notation.
 
@@ -167,6 +174,10 @@ Returns an ArrayRef of class labels, each of them could be returned by C<predict
 Returns value of the coefficient of classifier matrix. i.e., W(C<$feature_index>, C<$label_index>) (see C<bias> method description above.)
 
 Be careful that both indices are 1-based just same as C<bias>.
+
+=head2 is_oneclass_model
+
+Returns true if the model is trained for one-class SVM, false otherwise.
 
 =head2 is_probability_model
 
