@@ -472,7 +472,9 @@ CODE:
     set_print_string_function(dummy_puts);
     if (update) {
         self->C = best_C;
-        self->p = best_p;
+        if (self->solver_type == L2R_L2LOSS_SVR) {
+          self->p = best_p;
+        }
     }
     RETVAL = newAV();
     av_push(RETVAL, newSVnv(best_C));
