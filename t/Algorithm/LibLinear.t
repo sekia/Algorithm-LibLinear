@@ -12,8 +12,8 @@ my $input_data_set = do { local $/; <DATA> };
 {
     my $learner = new_ok 'Algorithm::LibLinear' => [
         cost => 1,
-        epsilon => 0.1,
-        solver => 'L2R_L2LOSS_SVC_DUAL',
+        epsilon => 0.01,
+        solver => 'L2R_L2LOSS_SVC',
         weights => [
             +{ label => 1, weight => 1, },
             +{ label => -1, weight => 1, },

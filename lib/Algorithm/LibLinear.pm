@@ -201,7 +201,7 @@ Algorithm::LibLinear - A Perl binding for LIBLINEAR, a library for classificatio
   my $learner = Algorithm::LibLinear->new(
     cost => 1,
     epsilon => 0.01,
-    solver => 'L2R_L2LOSS_SVC_DUAL',
+    solver => 'L2R_L2LOSS_SVC',
     weights => [
       +{ label => 1, weight => 1, },
       +{ label => -1, weight => 1, },
@@ -210,7 +210,7 @@ Algorithm::LibLinear - A Perl binding for LIBLINEAR, a library for classificatio
   # Loads a training data set from DATA filehandle.
   my $data_set = Algorithm::LibLinear::DataSet->load(fh => \*DATA);
   # Updates training parameter.
-  $learner->find_cost_parameter(data_set => $data_set, max => 1000, num_folds => 5, update => 1);
+  $learner->find_parameters(data_set => $data_set, num_folds => 5, update => 1);
   # Executes cross validation.
   my $accuracy = $learner->cross_validation(data_set => $data_set, num_folds => 5);
   # Executes training.
@@ -349,7 +349,7 @@ Notice that C<loss_sensitivity> is affected too when C<update> is set.
 
 =head2 find_parameters(data_set => $data_set, num_folds => $num_folds [, initial_cost => -1.0] [, initial_loss_sensitivity => -1.0] [, update => 0])
 
-Find the best parameters by N-fold cross validation. If C<initial_cost> or C<initial_loss_sensitivity> is a negative, the value is automatically calculated.
+Finds the best parameters by N-fold cross validation. If C<initial_cost> or C<initial_loss_sensitivity> is a negative, the value is automatically calculated.
 
 When C<update> is set true, the instance is updated to use the found parameters. This behaviour is disabled by default.
 
