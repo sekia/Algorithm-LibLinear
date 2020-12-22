@@ -1,0 +1,28 @@
+name: CI
+on:
+  - push
+  - pull_request
+jobs:
+  unit-test:
+    name: Unit Test
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        perl:
+          - "5.30"
+          - "5.32"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.perl }}
+      - run: |
+          cpanm --notest Module::Build Module::Build::XSUtil
+          perl Build.PL
+          cpanm --installdeps .
+          perl Build
+      - run: perl Build test
