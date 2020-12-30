@@ -24,5 +24,5 @@ jobs:
           cpanm --notest Module::Build Module::Build::XSUtil
           perl Build.PL
           cpanm --installdeps .
-          perl Build
+      - run: perl Build
       - run: perl Build test
