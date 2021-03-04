@@ -8,10 +8,10 @@ Makefile
 ^\.build
 \.gz$
 ^\.git/
+^\.github/
 ^\.gitignore$
 ^\.proverc$
 ^Build$
 ^_build/
 ^ppport\.h$
-^\.travis.yml$
 ^xshelper\.h$
