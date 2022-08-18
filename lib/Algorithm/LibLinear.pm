@@ -10,7 +10,7 @@ use Smart::Args::TypeTiny;
 use Types::Standard qw/ArrayRef Bool ClassName Dict Enum InstanceOf Int Num/;
 use XSLoader;
 
-our $VERSION = '0.24';
+our $VERSION = '0.25';
 
 XSLoader::load(__PACKAGE__, $VERSION);
 
