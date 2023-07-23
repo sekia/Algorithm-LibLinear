@@ -326,7 +326,7 @@ For outlier detection:
 
 =item weights
 
-Weights adjust the cost parameter of different classes (C<-wi>.)
+Weights to adjust the cost parameter of different classes (C<-wi>.)
 
 For example,
 
